@@ -1,0 +1,14 @@
+product_id,version,image_path,taste,taste_initMouse,taste_RT,health,health_initMouse,health_RT,liking,liking_initMouse,liking_RT,participant,age,trial_type,correct_product,memory_correct_product,memory_chosen,memory_accuracy,memory_RT
+otis,original,/Users/valentinaparada/Documents/experiemnt/taste&health/otis_original.png,,3.8,,3.7,3.3,0.9508180419998098,2.4,2.6,0.49710849999974016,pp,pp,,,,,,
+lays,taste,/Users/valentinaparada/Documents/experiemnt/taste&health/lays_taste.png,4.1,4.9,0.6803796659987711,5.4,5.2,0.6105838329986,1.8,1.8,0.6114812919986434,pp,pp,,,,,,
+lindt,taste,/Users/valentinaparada/Documents/experiemnt/taste&health/lindt_taste.png,3.0,3.9,0.573055041999396,3.8,5.0,1.0199999999986176,2.8,2.8,0.49089816600098857,pp,pp,,,,,,
+timtam,original,/Users/valentinaparada/Documents/experiemnt/taste&health/timtam_original.png,2.3,3.4,0.8261944589994528,3.5,1.8,2.5041359169990756,3.0,3.3,1.1424965419992077,pp,pp,,,,,,
+otis,health,/Users/valentinaparada/Documents/experiemnt/taste&health/otis_health.png,3.9,4.7,0.6554013749992009,3.6,3.2,0.9990187090006657,3.0,3.4,0.6455152920007095,pp,pp,,,,,,
+lindt,health,/Users/valentinaparada/Documents/experiemnt/taste&health/lindt_health.png,3.1,3.1,0.45781662500121456,2.5,2.1,4.220890250000593,4.6,4.8,4.07478650000121,pp,pp,,,,,,
+timtam,taste,/Users/valentinaparada/Documents/experiemnt/taste&health/timtam_taste.png,2.5,2.6,0.34558916699825204,4.5,4.5,0.4136552500003745,5.2,5.2,0.40801720800118346,pp,pp,,,,,,
+lays,health,/Users/valentinaparada/Documents/experiemnt/taste&health/lays_health.png,4.5,4.7,0.427068834000238,5.6,5.1,0.37353695800084097,1.8,1.8,0.36404379200030235,pp,pp,,,,,,
+,,,,,,,,,,,,pp,pp,memory,lays,lays,lays,True,2.5508423329993093
+otis,taste,/Users/valentinaparada/Documents/experiemnt/taste&health/otis_taste.png,2.8,3.8,0.867035000001124,3.7,3.7,0.34146408299966424,2.3,2.5,0.3368714589996671,pp,pp,,,,,,
+lays,original,/Users/valentinaparada/Documents/experiemnt/taste&health/lays_original.png,3.0,3.0,0.23296962499989604,2.0,2.0,0.42934620800042467,4.4,4.4,0.34458066699880874,pp,pp,,,,,,
+timtam,health,/Users/valentinaparada/Documents/experiemnt/taste&health/timtam_health.png,3.7,3.7,0.023220042001412367,3.5,3.5,0.7232937080007105,4.3,4.3,0.30248608399961086,pp,pp,,,,,,
+lindt,original,/Users/valentinaparada/Documents/experiemnt/taste&health/lindt_original.png,4.1,4.1,0.41919295899970166,4.3,4.3,0.4296006659988052,2.0,2.0,0.8534849170009693,pp,pp,,,,,,
