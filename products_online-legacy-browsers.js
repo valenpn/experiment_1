@@ -1573,7 +1573,11 @@ function memoryTrialRoutineBegin(snapshot) {
     if (!show_memory) {
         continueRoutine = false;
     } else {
-        // 1. Generate the list of wrong options (distractors)
+        // 1. Hide mouse at start
+        document.body.style.cursor = 'none';
+        interaction_started = false; 
+    
+        // 2. Generate the list of wrong options
         let distractor_pool = [];
         for (let p of all_products) {
             if (p !== memory_correct_product) {
@@ -1581,21 +1585,24 @@ function memoryTrialRoutineBegin(snapshot) {
             }
         }
     
-        // 2. Pick 2 random wrong options using the correct PsychoJS util function
-        wrong_options = util.sample(distractor_pool, 2);
+        // 3. Shuffle the pool manually and pick the first 2
+        // (This is a native JS way to do a 'sample')
+        distractor_pool.sort(() => Math.random() - 0.5);
+        wrong_options = distractor_pool.slice(0, 2);
     
-        // 3. Combine wrong options with the correct one
-        memory_options = [...wrong_options, memory_correct_product];
+        // 4. Combine with the correct product
+        memory_options = [wrong_options[0], wrong_options[1], memory_correct_product];
     
-        // 4. Shuffle the options so the correct one isn't always in the same spot
-        util.shuffle(memory_options);
+        // 5. Shuffle the final 3 options so the correct one moves
+        memory_options.sort(() => Math.random() - 0.5);
     
-        // 5. Update the UI text
+        // 6. Update UI
         memoryQuestion.text = "Which product was shown in the previous trial?\n\nUse keys 1, 2, or 3 to respond.";
         opt1Text.text = ("1. " + memory_options[0]);
         opt2Text.text = ("2. " + memory_options[1]);
         opt3Text.text = ("3. " + memory_options[2]);
     }
+        
     memoryKey.keys = undefined;
     memoryKey.rt = undefined;
     _memoryKey_allKeys = [];
