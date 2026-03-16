@@ -194,15 +194,19 @@ async function experimentInit() {
   // Initialize components for Routine "ratingTrial"
   ratingTrialClock = new util.Clock();
   // Run 'Begin Experiment' code from ratingCode
-  import * as random from 'random';
-  import {core} from 'psychopy';
-  TIME_LIMIT = 8;
-  all_questions = [["liking", "How much do you LIKE the product?"], ["taste", "How TASTY do you think the product is?"], ["health", "How HEALTHY do you think the product is?"]];
-  questionClock = new util.Clock();
-  delayClock = new util.Clock();
-  SLIDER_MIN = 0;
-  SLIDER_MAX = 7;
-  SLIDER_WIDTH = 0.72;
+  TIME_LIMIT = 8
+  
+  all_questions = [
+      ('liking', 'How much do you LIKE the product?'),
+      ('taste', 'How TASTY do you think the product is?'),
+      ('health', 'How HEALTHY do you think the product is?')
+  ]
+  
+  questionClock = core.Clock()
+  delayClock = core.Clock()
+  SLIDER_MIN = 0
+  SLIDER_MAX = 7
+  SLIDER_WIDTH = 0.72
   
   productImage = new visual.ImageStim({
     win : psychoJS.window,
