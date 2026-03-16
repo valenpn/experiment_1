@@ -1052,14 +1052,13 @@ var trial_rts;
 var trial_init;
 var start_x;
 var current_x;
-var mouse_has_moved;
 var init_val;
 var click_ready;
 var waiting_next_question;
+var timeout_warning;
 var normal_delay;
 var warning_delay;
-var delay_duration;
-var timeout_warning;
+var next_question_time;
 var gotValidClick;
 var ratingTrialMaxDuration;
 var ratingTrialComponents;
@@ -1080,7 +1079,7 @@ function ratingTrialRoutineBegin(snapshot) {
     // Run 'Begin Routine' code from ratingCode
     questions_list = [...all_questions];
     
-    // shuffle
+    // shuffle questions
     for (let i = questions_list.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [questions_list[i], questions_list[j]] = [questions_list[j], questions_list[i]];
@@ -1093,12 +1092,10 @@ function ratingTrialRoutineBegin(snapshot) {
     
     questionText.text = questions_list[question_index][1];
     
-    // random initial slider x position
+    // random initial slider position
     start_x = ((Math.random() * SLIDER_WIDTH) - (SLIDER_WIDTH / 2));
     current_x = start_x;
-    mouse_has_moved = false;
     
-    // convert initial x to 0-7 value
     init_val = (((start_x + (SLIDER_WIDTH / 2)) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN)) + SLIDER_MIN;
     init_val = Math.round(init_val * 10) / 10;
     init_val = Math.min(Math.max(init_val, SLIDER_MIN), SLIDER_MAX);
@@ -1112,12 +1109,15 @@ function ratingTrialRoutineBegin(snapshot) {
     questionClock.reset();
     click_ready = true;
     waiting_next_question = false;
+    timeout_warning = false;
+    
     normal_delay = 0.5;
     warning_delay = 1.5;
-    delay_duration = normal_delay;
-    sliderCover.opacity = 0;
-    warningText.opacity = 0;
-    timeout_warning = false;
+    next_question_time = -1;
+    
+    // IMPORTANT: hide these properly
+    sliderCover.setAutoDraw(false);
+    warningText.setAutoDraw(false);
     productImage.setImage(image_path);
     ratingSlider.reset()
     // setup some python lists for storing info about the ratingMouse
@@ -1152,7 +1152,9 @@ function ratingTrialRoutineBegin(snapshot) {
 }
 
 
+var mouse_has_moved;
 var current_val;
+var delay_duration;
 var prevButtonState;
 var _mouseButtons;
 var _mouseXYs;
