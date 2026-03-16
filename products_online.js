@@ -1048,20 +1048,9 @@ function fixationRoutineEnd(snapshot) {
 
 
 var ratingTrialMaxDurationReached;
-var questions_list;
-var question_index;
-var trial_ratings;
-var trial_rts;
-var trial_init;
-var start_x;
-var current_x;
-var init_val;
 var click_ready;
-var waiting_next_question;
-var timeout_warning;
-var normal_delay;
-var warning_delay;
-var delay_duration;
+var current_x;
+var current_val;
 var gotValidClick;
 var ratingTrialMaxDuration;
 var ratingTrialComponents;
@@ -1080,48 +1069,97 @@ function ratingTrialRoutineBegin(snapshot) {
     ratingTrialMaxDurationReached = false;
     // update component parameters for each repeat
     // Run 'Begin Routine' code from ratingCode
-    questions_list = [...all_questions];
+    // 1. Get Mouse/Slider Position
+    let mousePos = ratingMouse.getPos();
+    let mouse_pressed = ratingMouse.getPressed()[0] === 1;
     
-    // Fisher-Yates Shuffle
-    for (let i = questions_list.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [questions_list[i], questions_list[j]] = [questions_list[j], questions_list[i]];
+    // NEW: Safety check - if mouse is NOT pressed, we can finally 'arm' the click logic
+    // This prevents the transition-click from skipping the first question
+    if (!mouse_pressed) {
+        click_ready = true;
     }
     
-    question_index = 0;
-    trial_ratings = {};
-    trial_rts = {};
-    trial_init = {};
+    if (mousePos && Math.abs(mousePos[0]) > 0.001) {
+        current_x = mousePos[0];
+    }
+    current_x = Math.max(-SLIDER_WIDTH / 2, Math.min(SLIDER_WIDTH / 2, current_x));
     
-    // Initial Question Setup
-    questionText.text = questions_list[question_index][1];
+    let current_val = ((current_x + SLIDER_WIDTH / 2) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN) + SLIDER_MIN;
+    current_val = Math.min(Math.max(Number.parseFloat(current_val.toFixed(1)), SLIDER_MIN), SLIDER_MAX);
     
-    // Random Start Position
-    start_x = (Math.random() * SLIDER_WIDTH) - (SLIDER_WIDTH / 2);
-    current_x = start_x;
+    // 2. Black screen / Warning delay state
+    if (waiting_next_question) {
+        productImage.opacity = 0;
+        questionText.text = "";
+        ratingValueText.text = "";
+        leftAnchor.text = "";
+        rightAnchor.text = "";
+        sliderCover.opacity = 1.0; // Force black cover
+        
+        if (timeout_warning) {
+            warningText.text = "Please answer before 8 seconds";
+            warningText.opacity = 1.0;
+        } else {
+            warningText.opacity = 0.0;
+        }
     
-    init_val = ((current_x + (SLIDER_WIDTH / 2)) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN) + SLIDER_MIN;
-    init_val = Math.min(Math.max(Number.parseFloat(init_val.toFixed(1)), SLIDER_MIN), SLIDER_MAX);
+        if (delayClock.getTime() >= delay_duration) {
+            // Only end routine if we finished the delay of the LAST question
+            if (question_index >= questions_list.length) {
+                continueRoutine = false;
+            } else {
+                waiting_next_question = false;
+                productImage.opacity = 1.0;
+                warningText.opacity = 0.0;
+                sliderCover.opacity = 0.0;
+                leftAnchor.text = "Not at all";
+                rightAnchor.text = "Very much";
+                questionText.text = questions_list[question_index][1];
+                
+                let next_start_x = (Math.random() * SLIDER_WIDTH) - (SLIDER_WIDTH / 2);
+                current_x = next_start_x;
+                
+                ratingSlider.reset();
+                ratingSlider.markerPos = current_val; 
+                questionClock.reset();
+            }
+        }
+    } 
+    // 3. Active Question State
+    else {
+        // HARD RESET opacities every frame to ensure no flickering
+        sliderCover.opacity = 0.0;
+        warningText.opacity = 0.0;
+        productImage.opacity = 1.0;
+        
+        leftAnchor.text = "Not at all";
+        rightAnchor.text = "Very much";
+        ratingSlider.markerPos = current_val;
+        ratingValueText.text = "Rating: " + current_val.toFixed(1);
     
-    ratingSlider.reset();
-    ratingSlider.markerPos = init_val;
-    ratingValueText.text = "Rating: " + init_val.toFixed(1);
-    
-    trial_init[questions_list[question_index][0]] = init_val;
-    
-    // State Variables
-    questionClock.reset();
-    delayClock.reset();
-    click_ready = true;
-    waiting_next_question = false;
-    timeout_warning = false;
-    normal_delay = 0.5;
-    warning_delay = 1.5;
-    delay_duration = normal_delay;
-    
-    // Reset visibility
-    warningText.opacity = 0;
-    productImage.opacity = 1;
+        if (questionClock.getTime() >= 8.0) {
+            let q_name = questions_list[question_index][0];
+            trial_ratings[q_name] = null;
+            trial_rts[q_name] = null;
+            timeout_warning = true;
+            delay_duration = warning_delay;
+            question_index += 1;
+            waiting_next_question = true;
+            delayClock.reset();
+        }
+        // Only allow click if click_ready is true (prevents accidental skips)
+        else if (mouse_pressed && click_ready) {
+            click_ready = false; 
+            let q_name = questions_list[question_index][0];
+            trial_ratings[q_name] = current_val;
+            trial_rts[q_name] = questionClock.getTime();
+            timeout_warning = false;
+            delay_duration = normal_delay;
+            question_index += 1;
+            waiting_next_question = true;
+            delayClock.reset();
+        }
+    }
     productImage.setImage(image_path);
     ratingSlider.reset()
     // setup some python lists for storing info about the ratingMouse
@@ -1155,7 +1193,6 @@ function ratingTrialRoutineBegin(snapshot) {
 }
 
 
-var current_val;
 var prevButtonState;
 var _mouseButtons;
 var _mouseXYs;
@@ -1171,6 +1208,12 @@ function ratingTrialRoutineEachFrame() {
     let mousePos = ratingMouse.getPos();
     let mouse_pressed = ratingMouse.getPressed()[0] === 1;
     
+    // NEW: Safety check - if mouse is NOT pressed, we can finally 'arm' the click logic
+    // This prevents the transition-click from skipping the first question
+    if (!mouse_pressed) {
+        click_ready = true;
+    }
+    
     if (mousePos && Math.abs(mousePos[0]) > 0.001) {
         current_x = mousePos[0];
     }
@@ -1178,6 +1221,7 @@ function ratingTrialRoutineEachFrame() {
     
     let current_val = ((current_x + SLIDER_WIDTH / 2) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN) + SLIDER_MIN;
     current_val = Math.min(Math.max(Number.parseFloat(current_val.toFixed(1)), SLIDER_MIN), SLIDER_MAX);
+    
     // 2. Black screen / Warning delay state
     if (waiting_next_question) {
         productImage.opacity = 0;
@@ -1185,56 +1229,49 @@ function ratingTrialRoutineEachFrame() {
         ratingValueText.text = "";
         leftAnchor.text = "";
         rightAnchor.text = "";
-        sliderCover.opacity = 1;
+        sliderCover.opacity = 1.0; // Force black cover
         
         if (timeout_warning) {
             warningText.text = "Please answer before 8 seconds";
-            warningText.opacity = 1;
+            warningText.opacity = 1.0;
         } else {
-            warningText.opacity = 0;
+            warningText.opacity = 0.0;
         }
     
-        // Check if transition delay is over
         if (delayClock.getTime() >= delay_duration) {
-            waiting_next_question = false;
-            
+            // Only end routine if we finished the delay of the LAST question
             if (question_index >= questions_list.length) {
                 continueRoutine = false;
             } else {
-                // Setup next question
-                productImage.opacity = 1;
-                warningText.opacity = 0;
-                sliderCover.opacity = 0;
+                waiting_next_question = false;
+                productImage.opacity = 1.0;
+                warningText.opacity = 0.0;
+                sliderCover.opacity = 0.0;
                 leftAnchor.text = "Not at all";
                 rightAnchor.text = "Very much";
                 questionText.text = questions_list[question_index][1];
                 
                 let next_start_x = (Math.random() * SLIDER_WIDTH) - (SLIDER_WIDTH / 2);
                 current_x = next_start_x;
-    
-                let next_init_val = ((current_x + SLIDER_WIDTH / 2) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN) + SLIDER_MIN;
-                next_init_val = Math.min(Math.max(Number.parseFloat(next_init_val.toFixed(1)), SLIDER_MIN), SLIDER_MAX);
                 
                 ratingSlider.reset();
-                ratingSlider.markerPos = next_init_val;
-                ratingValueText.text = "Rating: " + next_init_val.toFixed(1);
-                trial_init[questions_list[question_index][0]] = next_init_val;
+                ratingSlider.markerPos = current_val; 
                 questionClock.reset();
             }
         }
     } 
     // 3. Active Question State
     else {
-        sliderCover.opacity = 0;
-        warningText.opacity = 0;
-        productImage.opacity = 1;
+        // HARD RESET opacities every frame to ensure no flickering
+        sliderCover.opacity = 0.0;
+        warningText.opacity = 0.0;
+        productImage.opacity = 1.0;
+        
         leftAnchor.text = "Not at all";
         rightAnchor.text = "Very much";
-        
         ratingSlider.markerPos = current_val;
         ratingValueText.text = "Rating: " + current_val.toFixed(1);
     
-        // Timeout logic (8 seconds)
         if (questionClock.getTime() >= 8.0) {
             let q_name = questions_list[question_index][0];
             trial_ratings[q_name] = null;
@@ -1245,9 +1282,9 @@ function ratingTrialRoutineEachFrame() {
             waiting_next_question = true;
             delayClock.reset();
         }
-        // Click logic
+        // Only allow click if click_ready is true (prevents accidental skips)
         else if (mouse_pressed && click_ready) {
-            click_ready = false;
+            click_ready = false; 
             let q_name = questions_list[question_index][0];
             trial_ratings[q_name] = current_val;
             trial_rts[q_name] = questionClock.getTime();
@@ -1257,10 +1294,6 @@ function ratingTrialRoutineEachFrame() {
             waiting_next_question = true;
             delayClock.reset();
         }
-    }
-    
-    if (!mouse_pressed) {
-        click_ready = true;
     }
     
     // *productImage* updates
