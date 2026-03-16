@@ -543,7 +543,7 @@
         <Param val="False" valType="bool" updates="constant" name="forceEndRoutine"/>
         <Param val="0.1" valType="num" updates="constant" name="granularity"/>
         <Param val="" valType="code" updates="None" name="initVal"/>
-        <Param val="" valType="list" updates="constant" name="labels"/>
+        <Param val="0,1,2,3,4,5,6,7" valType="list" updates="constant" name="labels"/>
         <Param val="0.05" valType="num" updates="constant" name="letterHeight"/>
         <Param val="ratingSlider" valType="code" updates="None" name="name"/>
         <Param val="" valType="num" updates="constant" name="opacity"/>
