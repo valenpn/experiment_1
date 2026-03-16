@@ -1119,6 +1119,16 @@ function ratingTrialRoutineBegin(snapshot) {
     leftAnchor.text = "Not at all";
     rightAnchor.text = "Very much";
     
+    if (ratingSlider.ticks.length === 0 || !ratingSlider.pixi) {
+            ratingSlider.ticks = [0, 1, 2, 3, 4, 5, 6, 7];
+            ratingSlider._buildSlider();
+            ratingSlider._updateAppearance();
+        }
+        // ----------------
+    
+        ratingSlider.markerPos = current_val;
+        ratingValueText.text = "Rating: " + current_val.toFixed(1);
+    
     // random initial slider position
     let start_x = (Math.random() * SLIDER_WIDTH) - (SLIDER_WIDTH / 2);
     current_x = start_x;
