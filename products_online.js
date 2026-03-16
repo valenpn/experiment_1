@@ -1551,42 +1551,53 @@ function memoryTrialRoutineBegin(snapshot) {
     }
     _pj = {};
     _pj_snippets(_pj);
+    
+    // Update memory count
     if (_pj.in_es6(product_id, memory_counts)) {
         memory_counts[product_id] += 1;
     }
-    // New (JavaScript-style)
+    
+    // Data logging
     psychoJS.experiment.addData("memory_count_now", memory_counts[product_id] || "");
     psychoJS.experiment.addData("memory_target_now", memory_target_occurrence[product_id] || "");
+    
     show_memory = false;
     memory_correct_product = "";
+    
+    // Check if memory task should trigger
     if (_pj.in_es6(product_id, MEMORY_TRIGGERS)) {
         if ((memory_counts[product_id] === memory_target_occurrence[product_id])) {
             show_memory = true;
             memory_correct_product = product_id;
         }
     }
-    if ((! show_memory)) {
+    
+    if (!show_memory) {
         continueRoutine = false;
     } else {
-        wrong_options = Math.random.sample(function () {
-        var _pj_a = [], _pj_b = all_products;
-        for (var _pj_c = 0, _pj_d = _pj_b.length; (_pj_c < _pj_d); _pj_c += 1) {
-            var p = _pj_b[_pj_c];
-            if ((p !== memory_correct_product)) {
-                _pj_a.push(p);
+        // 1. Generate the list of wrong options (distractors)
+        let distractor_pool = [];
+        for (let p of all_products) {
+            if (p !== memory_correct_product) {
+                distractor_pool.push(p);
             }
         }
-        return _pj_a;
-    }
-    .call(this), 2);
-        memory_options = (wrong_options + [memory_correct_product]);
-        Math.random.shuffle(memory_options);
+    
+        // 2. Pick 2 random wrong options using the correct PsychoJS util function
+        wrong_options = util.sample(distractor_pool, 2);
+    
+        // 3. Combine wrong options with the correct one
+        memory_options = [...wrong_options, memory_correct_product];
+    
+        // 4. Shuffle the options so the correct one isn't always in the same spot
+        util.shuffle(memory_options);
+    
+        // 5. Update the UI text
         memoryQuestion.text = "Which product was shown in the previous trial?\n\nUse keys 1, 2, or 3 to respond.";
         opt1Text.text = ("1. " + memory_options[0]);
         opt2Text.text = ("2. " + memory_options[1]);
         opt3Text.text = ("3. " + memory_options[2]);
     }
-    
     memoryKey.keys = undefined;
     memoryKey.rt = undefined;
     _memoryKey_allKeys = [];
