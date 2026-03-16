@@ -1187,6 +1187,8 @@ function ratingTrialRoutineEachFrame() {
     frameN = frameN + 1;// number of completed frames (so 0 is the first frame)
     // update/draw components on each frame
     // Run 'Each Frame' code from ratingCode
+    // Inside your click detection logic
+    document.body.style.cursor = 'default';
     // 1. Get mouse / slider state
     let mousePos = ratingMouse.getPos();
     let mouse_pressed = ratingMouse.getPressed()[0] === 1;
