@@ -1513,6 +1513,7 @@ function ratingTrialRoutineEnd(snapshot) {
 
 
 var memoryTrialMaxDurationReached;
+var interaction_started;
 var _pj;
 var show_memory;
 var memory_correct_product;
@@ -1534,6 +1535,7 @@ function memoryTrialRoutineBegin(snapshot) {
     memoryTrialMaxDurationReached = false;
     // update component parameters for each repeat
     // Run 'Begin Routine' code from memoryCode
+    interaction_started = false;
     var _pj;
     function _pj_snippets(container) {
         function in_es6(left, right) {
