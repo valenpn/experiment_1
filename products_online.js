@@ -1102,7 +1102,7 @@ function ratingTrialRoutineBegin(snapshot) {
     // update component parameters for each repeat
     // Run 'Begin Routine' code from ratingCode
     questions_list = [...all_questions];
-    psychoJS.window.mouseVisible = false;
+    document.body.style.cursor = 'none';
     // Fisher-Yates shuffle
     for (let i = questions_list.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
