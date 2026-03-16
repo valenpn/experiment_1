@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 This experiment was created using PsychoPy3 Experiment Builder (v2025.1.1),
-    on Mon Mar 16 15:44:25 2026
+    on Mon Mar 16 15:12:39 2026
 If you publish work using this script the most relevant publication is:
 
     Peirce J, Gray JR, Simpson S, MacAskill M, Höchenberger R, Sogo H, Kastman E, Lindeløv JK. (2019) 
@@ -130,7 +130,7 @@ def setupData(expInfo, dataDir=None):
     thisExp = data.ExperimentHandler(
         name=expName, version=expVersion,
         extraInfo=expInfo, runtimeInfo=None,
-        originPath='/Users/valentinaparada/Documents/experiemnt/products_online_lastrun.py',
+        originPath='/Users/valentinaparada/Documents/experiemnt/products_online_OLD_lastrun.py',
         savePickle=True, saveWideText=True,
         dataFileName=dataDir + os.sep + filename, sortColumns='time'
     )
@@ -426,17 +426,21 @@ def run(expInfo, thisExp, win, globalClock=None, thisSession=None):
     # Run 'Begin Experiment' code from ratingCode
     import random
     from psychopy import core
+    
     TIME_LIMIT = 8
+    
     all_questions = [
         ('liking', 'How much do you LIKE the product?'),
         ('taste', 'How TASTY do you think the product is?'),
         ('health', 'How HEALTHY do you think the product is?')
     ]
+    
     questionClock = core.Clock()
     delayClock = core.Clock()
     SLIDER_MIN = 0
     SLIDER_MAX = 7
     SLIDER_WIDTH = 0.72
+    
     productImage = visual.ImageStim(
         win=win,
         name='productImage', 
@@ -879,22 +883,20 @@ def run(expInfo, thisExp, win, globalClock=None, thisSession=None):
     # Run 'Begin Routine' code from code_serOrder
     all_trials = data.importConditions('image_table.csv')
     row_order = list(range(len(all_trials)))
+    
     def has_adjacent_same_product(order):
-    
         for i in range(len(order) - 1):
-    
             if all_trials[order[i]]['product_id'] == all_trials[order[i + 1]]['product_id']:
-    
                 return True
-    
         return False
+    
     random.shuffle(row_order)
     while has_adjacent_same_product(row_order):
         random.shuffle(row_order)
+    
     selected_rows_str = ",".join(str(i) for i in row_order)
+    
     continueRoutine = False
-    
-    
     # store start times for setOrder
     setOrder.tStartRefresh = win.getFutureFlipTime(clock=globalClock)
     setOrder.tStart = globalClock.getTime(format='float')
@@ -1157,6 +1159,7 @@ def run(expInfo, thisExp, win, globalClock=None, thisSession=None):
         init_val = ((start_x + SLIDER_WIDTH / 2) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN) + SLIDER_MIN
         init_val = round(init_val, 1)
         init_val = min(max(init_val, SLIDER_MIN), SLIDER_MAX)
+        
         ratingSlider.reset()
         ratingSlider.markerPos = init_val
         ratingValueText.text = f"Rating: {init_val:.1f}"
@@ -1215,13 +1218,17 @@ def run(expInfo, thisExp, win, globalClock=None, thisSession=None):
             frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
             # update/draw components on each frame
             # Run 'Each Frame' code from ratingCode
-            # 1. Update positions
+            # mouse x position
             mouse_x = ratingMouse.getPos()[0]
+            
+            # convert mouse position to 0-7 scale
             current_val = ((mouse_x + SLIDER_WIDTH / 2) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN) + SLIDER_MIN
-            current_val = min(max(round(current_val, 1), SLIDER_MIN), SLIDER_MAX)
+            current_val = round(current_val, 1)
+            current_val = min(max(current_val, SLIDER_MIN), SLIDER_MAX)
+            
             mouse_pressed = ratingMouse.getPressed()[0]
             
-            # 2. Black screen / Warning delay state
+            # black screen delay between questions
             if waiting_next_question:
                 productImage.opacity = 0
                 questionText.text = ""
@@ -1229,7 +1236,6 @@ def run(expInfo, thisExp, win, globalClock=None, thisSession=None):
                 leftAnchor.text = ""
                 rightAnchor.text = ""
                 sliderCover.opacity = 1
-                
                 if timeout_warning:
                     warningText.opacity = 1
                     warningText.text = "Please answer before 8 seconds"
@@ -1238,63 +1244,74 @@ def run(expInfo, thisExp, win, globalClock=None, thisSession=None):
             
                 if delayClock.getTime() >= delay_duration:
                     waiting_next_question = False
-                    
-                    # Check if we should end the routine now
-                    if question_index >= len(questions_list):
-                        continueRoutine = False
-                    else:
-                        # Only run this if there IS a next question
-                        productImage.opacity = 1
-                        warningText.opacity = 0
-                        sliderCover.opacity = 0
-                        leftAnchor.text = "Not at all"
-                        rightAnchor.text = "Very much"
-                        questionText.text = questions_list[question_index][1]
             
-                        start_x = random.uniform(-SLIDER_WIDTH / 2, SLIDER_WIDTH / 2)
-                        ratingMouse.setPos((start_x, -0.33))
+                    productImage.opacity = 1
+                    warningText.opacity = 0
+                    sliderCover.opacity = 0
+                    leftAnchor.text = "Not at all"
+                    rightAnchor.text = "Very much"
+                    questionText.text = questions_list[question_index][1]
             
-                        init_val = ((start_x + SLIDER_WIDTH / 2) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN) + SLIDER_MIN
-                        init_val = min(max(round(init_val, 1), SLIDER_MIN), SLIDER_MAX)
+                    # random initial mouse x position for the new question
+                    start_x = random.uniform(-SLIDER_WIDTH / 2, SLIDER_WIDTH / 2)
+                    ratingMouse.setPos((start_x, -0.33))
             
-                        ratingSlider.reset()
-                        ratingSlider.markerPos = init_val
-                        ratingValueText.text = f"Rating: {init_val:.1f}"
-                        trial_init[questions_list[question_index][0]] = init_val
-                        questionClock.reset()
+                    init_val = ((start_x + SLIDER_WIDTH / 2) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN) + SLIDER_MIN
+                    init_val = round(init_val, 1)
+                    init_val = min(max(init_val, SLIDER_MIN), SLIDER_MAX)
             
-            # 3. Normal question state
+                    ratingSlider.reset()
+                    ratingSlider.markerPos = init_val
+                    ratingValueText.text = f"Rating: {init_val:.1f}"
+                    trial_init[questions_list[question_index][0]] = init_val
+            
+                    questionClock.reset()
+            
+            # normal question state
             else:
                 productImage.opacity = 1
                 leftAnchor.text = "Not at all"
                 rightAnchor.text = "Very much"
+            
                 ratingSlider.markerPos = current_val
                 ratingValueText.text = f"Rating: {current_val:.1f}"
             
-                # Check for timeout
+                # click confirms current question
+                    # timeout without response
                 if questionClock.getTime() >= TIME_LIMIT:
                     q_name = questions_list[question_index][0]
                     trial_ratings[q_name] = None
                     trial_rts[q_name] = None
+            
                     timeout_warning = True
                     delay_duration = warning_delay
                     question_index += 1
-                    waiting_next_question = True
-                    delayClock.reset()
             
-                # Check for click confirmation
+                    if question_index >= len(questions_list):
+                        continueRoutine = False
+                    else:
+                        waiting_next_question = True
+                        delayClock.reset()
+            
+                # click confirms current question
                 elif mouse_pressed and click_ready:
                     click_ready = False
+            
                     q_name = questions_list[question_index][0]
                     trial_ratings[q_name] = current_val
                     trial_rts[q_name] = questionClock.getTime()
+            
                     timeout_warning = False
                     delay_duration = normal_delay
                     question_index += 1
-                    waiting_next_question = True
-                    delayClock.reset()
             
-            # re-arm click
+                    if question_index >= len(questions_list):
+                        continueRoutine = False
+                    else:
+                        waiting_next_question = True
+                        delayClock.reset()
+            
+            # re-arm click only after mouse is released
             if not mouse_pressed:
                 click_ready = True
             
@@ -1591,7 +1608,6 @@ def run(expInfo, thisExp, win, globalClock=None, thisSession=None):
             opt1Text.text = "1. " + memory_options[0]
             opt2Text.text = "2. " + memory_options[1]
             opt3Text.text = "3. " + memory_options[2]
-        
         # create starting attributes for memoryKey
         memoryKey.keys = []
         memoryKey.rt = []
@@ -1777,7 +1793,6 @@ def run(expInfo, thisExp, win, globalClock=None, thisSession=None):
         memoryTrial.tStopRefresh = tThisFlipGlobal
         thisExp.addData('memoryTrial.stopped', memoryTrial.tStop)
         # Run 'End Routine' code from memoryCode
-        
         if show_memory:
             if memoryKey.keys == '1':
                 chosen_product = memory_options[0]
@@ -1787,8 +1802,9 @@ def run(expInfo, thisExp, win, globalClock=None, thisSession=None):
                 chosen_product = memory_options[2]
             else:
                 chosen_product = ''
-                
+        
             memory_accuracy = int(chosen_product == memory_correct_product)
+        
             thisExp.addData('memory_correct_product', memory_correct_product)
             thisExp.addData('memory_chosen', chosen_product)
             thisExp.addData('memory_accuracy', memory_accuracy)
