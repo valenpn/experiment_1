@@ -123,6 +123,9 @@ psychoJS.start({
 
 psychoJS.experimentLogger.setLevel(core.Logger.ServerLevel.INFO);
 
+
+var currentLoop;
+var frameDur;
 async function updateInfo() {
   currentLoop = psychoJS.experiment;  // right now there are no loops
   expInfo['date'] = util.MonotonicClock.getDateStr();  // add a simple timestamp
@@ -150,6 +153,48 @@ async function updateInfo() {
   return Scheduler.Event.NEXT;
 }
 
+
+var WelcomeClock;
+var text_welcome;
+var key_resp;
+var instructionsClock;
+var text_instructions;
+var key_resp_instructions;
+var setOrderClock;
+var fixationClock;
+var text_fixation;
+var ratingTrialClock;
+var TIME_LIMIT;
+var all_questions;
+var questionClock;
+var delayClock;
+var SLIDER_MIN;
+var SLIDER_MAX;
+var SLIDER_WIDTH;
+var productImage;
+var questionText;
+var ratingValueText;
+var ratingSlider;
+var sliderCover;
+var ratingMouse;
+var leftAnchor;
+var rightAnchor;
+var warningText;
+var memoryTrialClock;
+var MEMORY_TRIGGERS;
+var memory_counts;
+var memory_target_occurrence;
+var all_products;
+var memoryQuestion;
+var opt1Text;
+var opt2Text;
+var opt3Text;
+var memoryKey;
+var thanksClock;
+var endText;
+var endKey;
+var globalClock;
+var routineTimer;
 async function experimentInit() {
   // Initialize components for Routine "Welcome"
   WelcomeClock = new util.Clock();
@@ -405,6 +450,15 @@ async function experimentInit() {
   return Scheduler.Event.NEXT;
 }
 
+
+var t;
+var frameN;
+var continueRoutine;
+var routineForceEnded;
+var WelcomeMaxDurationReached;
+var _key_resp_allKeys;
+var WelcomeMaxDuration;
+var WelcomeComponents;
 function WelcomeRoutineBegin(snapshot) {
   return async function () {
     TrialHandler.fromSnapshot(snapshot); // ensure that .thisN vals are up to date
@@ -435,6 +489,7 @@ function WelcomeRoutineBegin(snapshot) {
     return Scheduler.Event.NEXT;
   }
 }
+
 
 function WelcomeRoutineEachFrame() {
   return async function () {
@@ -511,6 +566,7 @@ function WelcomeRoutineEachFrame() {
   };
 }
 
+
 function WelcomeRoutineEnd(snapshot) {
   return async function () {
     //--- Ending Routine 'Welcome' ---
@@ -543,6 +599,11 @@ function WelcomeRoutineEnd(snapshot) {
   }
 }
 
+
+var instructionsMaxDurationReached;
+var _key_resp_instructions_allKeys;
+var instructionsMaxDuration;
+var instructionsComponents;
 function instructionsRoutineBegin(snapshot) {
   return async function () {
     TrialHandler.fromSnapshot(snapshot); // ensure that .thisN vals are up to date
@@ -573,6 +634,7 @@ function instructionsRoutineBegin(snapshot) {
     return Scheduler.Event.NEXT;
   }
 }
+
 
 function instructionsRoutineEachFrame() {
   return async function () {
@@ -649,6 +711,7 @@ function instructionsRoutineEachFrame() {
   };
 }
 
+
 function instructionsRoutineEnd(snapshot) {
   return async function () {
     //--- Ending Routine 'instructions' ---
@@ -681,6 +744,13 @@ function instructionsRoutineEnd(snapshot) {
   }
 }
 
+
+var setOrderMaxDurationReached;
+var all_trials;
+var row_order;
+var selected_rows_str;
+var setOrderMaxDuration;
+var setOrderComponents;
 function setOrderRoutineBegin(snapshot) {
   return async function () {
     TrialHandler.fromSnapshot(snapshot); // ensure that .thisN vals are up to date
@@ -696,22 +766,30 @@ function setOrderRoutineBegin(snapshot) {
     setOrderMaxDurationReached = false;
     // update component parameters for each repeat
     // Run 'Begin Routine' code from code_serOrder
-    all_trials = main_loop.trialList
-    row_order = list(range(len(all_trials)))
+    // 1. Get the trials (Main loop name must match your loop)
+    all_trials = psychoJS.experiment._trialsData; 
+    row_order = Array.from({length: all_trials.length}, (_, i) => i);
     
-    def has_adjacent_same_product(order):
-        for i in range(len(order) - 1):
-            if all_trials[order[i]]['product_id'] == all_trials[order[i + 1]]['product_id']:
-                return True
-        return False
+    // 2. The function to check for adjacent products
+    function has_adjacent_same_product(order) {
+        for (let i = 0; i < order.length - 1; i++) {
+            if (all_trials[order[i]]['product_id'] === all_trials[order[i + 1]]['product_id']) {
+                return true;
+            }
+        }
+        return false;
+    }
     
-    random.shuffle(row_order)
-    while has_adjacent_same_product(row_order):
-        random.shuffle(row_order)
+    // 3. Shuffle logic using PsychoJS utility
+    util.shuffle(row_order);
+    while (has_adjacent_same_product(row_order)) {
+        util.shuffle(row_order);
+    }
     
-    selected_rows_str = ",".join(str(i) for i in row_order)
+    // 4. Convert to string for the loop
+    selected_rows_str = row_order.join(',');
     
-    continueRoutine = False
+    continueRoutine = false;
     psychoJS.experiment.addData('setOrder.started', globalClock.getTime());
     setOrderMaxDuration = null
     // keep track of which components have finished
@@ -723,6 +801,7 @@ function setOrderRoutineBegin(snapshot) {
     return Scheduler.Event.NEXT;
   }
 }
+
 
 function setOrderRoutineEachFrame() {
   return async function () {
@@ -758,6 +837,7 @@ function setOrderRoutineEachFrame() {
   };
 }
 
+
 function setOrderRoutineEnd(snapshot) {
   return async function () {
     //--- Ending Routine 'setOrder' ---
@@ -778,6 +858,8 @@ function setOrderRoutineEnd(snapshot) {
   }
 }
 
+
+var main_loop;
 function main_loopLoopBegin(main_loopLoopScheduler, snapshot) {
   return async function() {
     TrialHandler.fromSnapshot(snapshot); // update internal variables (.thisN etc) of the loop
@@ -813,6 +895,7 @@ function main_loopLoopBegin(main_loopLoopScheduler, snapshot) {
   }
 }
 
+
 async function main_loopLoopEnd() {
   // terminate loop
   psychoJS.experiment.removeLoop(main_loop);
@@ -823,6 +906,7 @@ async function main_loopLoopEnd() {
     currentLoop = psychoJS.experiment;  // so we use addData from the experiment
   return Scheduler.Event.NEXT;
 }
+
 
 function main_loopLoopEndIteration(scheduler, snapshot) {
   // ------Prepare for next entry------
@@ -843,6 +927,10 @@ function main_loopLoopEndIteration(scheduler, snapshot) {
   };
 }
 
+
+var fixationMaxDurationReached;
+var fixationMaxDuration;
+var fixationComponents;
 function fixationRoutineBegin(snapshot) {
   return async function () {
     TrialHandler.fromSnapshot(snapshot); // ensure that .thisN vals are up to date
@@ -870,6 +958,8 @@ function fixationRoutineBegin(snapshot) {
   }
 }
 
+
+var frameRemains;
 function fixationRoutineEachFrame() {
   return async function () {
     //--- Loop for each frame of Routine 'fixation' ---
@@ -929,6 +1019,7 @@ function fixationRoutineEachFrame() {
   };
 }
 
+
 function fixationRoutineEnd(snapshot) {
   return async function () {
     //--- Ending Routine 'fixation' ---
@@ -952,6 +1043,24 @@ function fixationRoutineEnd(snapshot) {
   }
 }
 
+
+var ratingTrialMaxDurationReached;
+var questions_list;
+var question_index;
+var trial_ratings;
+var trial_rts;
+var trial_init;
+var start_x;
+var init_val;
+var click_ready;
+var waiting_next_question;
+var normal_delay;
+var warning_delay;
+var delay_duration;
+var timeout_warning;
+var gotValidClick;
+var ratingTrialMaxDuration;
+var ratingTrialComponents;
 function ratingTrialRoutineBegin(snapshot) {
   return async function () {
     TrialHandler.fromSnapshot(snapshot); // ensure that .thisN vals are up to date
@@ -1025,6 +1134,13 @@ function ratingTrialRoutineBegin(snapshot) {
   }
 }
 
+
+var mouse_x;
+var current_val;
+var mouse_pressed;
+var prevButtonState;
+var _mouseButtons;
+var _mouseXYs;
 function ratingTrialRoutineEachFrame() {
   return async function () {
     //--- Loop for each frame of Routine 'ratingTrial' ---
@@ -1285,6 +1401,7 @@ function ratingTrialRoutineEachFrame() {
   };
 }
 
+
 function ratingTrialRoutineEnd(snapshot) {
   return async function () {
     //--- Ending Routine 'ratingTrial' ---
@@ -1326,6 +1443,14 @@ function ratingTrialRoutineEnd(snapshot) {
   }
 }
 
+
+var memoryTrialMaxDurationReached;
+var _pj;
+var show_memory;
+var memory_correct_product;
+var _memoryKey_allKeys;
+var memoryTrialMaxDuration;
+var memoryTrialComponents;
 function memoryTrialRoutineBegin(snapshot) {
   return async function () {
     TrialHandler.fromSnapshot(snapshot); // ensure that .thisN vals are up to date
@@ -1413,6 +1538,7 @@ function memoryTrialRoutineBegin(snapshot) {
     return Scheduler.Event.NEXT;
   }
 }
+
 
 function memoryTrialRoutineEachFrame() {
   return async function () {
@@ -1534,6 +1660,9 @@ function memoryTrialRoutineEachFrame() {
   };
 }
 
+
+var chosen_product;
+var memory_accuracy;
 function memoryTrialRoutineEnd(snapshot) {
   return async function () {
     //--- Ending Routine 'memoryTrial' ---
@@ -1593,6 +1722,11 @@ function memoryTrialRoutineEnd(snapshot) {
   }
 }
 
+
+var thanksMaxDurationReached;
+var _endKey_allKeys;
+var thanksMaxDuration;
+var thanksComponents;
 function thanksRoutineBegin(snapshot) {
   return async function () {
     TrialHandler.fromSnapshot(snapshot); // ensure that .thisN vals are up to date
@@ -1623,6 +1757,7 @@ function thanksRoutineBegin(snapshot) {
     return Scheduler.Event.NEXT;
   }
 }
+
 
 function thanksRoutineEachFrame() {
   return async function () {
@@ -1699,6 +1834,7 @@ function thanksRoutineEachFrame() {
   };
 }
 
+
 function thanksRoutineEnd(snapshot) {
   return async function () {
     //--- Ending Routine 'thanks' ---
@@ -1731,12 +1867,14 @@ function thanksRoutineEnd(snapshot) {
   }
 }
 
+
 function importConditions(currentLoop) {
   return async function () {
     psychoJS.importAttributes(currentLoop.getCurrentTrial());
     return Scheduler.Event.NEXT;
     };
 }
+
 
 async function quitPsychoJS(message, isCompleted) {
   // Check for and save orphaned data
