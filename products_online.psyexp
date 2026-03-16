@@ -532,26 +532,26 @@
       </TextComponent>
       <SliderComponent name="ratingSlider" plugin="None">
         <Param val="white" valType="color" updates="constant" name="borderColor"/>
-        <Param val="$(0.1529, -0.1216, 0.7176)" valType="color" updates="constant" name="color"/>
+        <Param val="LightGray" valType="color" updates="constant" name="color"/>
         <Param val="rgb" valType="str" updates="constant" name="colorSpace"/>
         <Param val="1" valType="num" updates="constant" name="contrast"/>
         <Param val="False" valType="bool" updates="None" name="disabled"/>
         <Param val="" valType="code" updates="None" name="durationEstim"/>
-        <Param val="1.0000, 1.0000, 1.0000" valType="color" updates="constant" name="fillColor"/>
+        <Param val="white" valType="color" updates="constant" name="fillColor"/>
         <Param val="False" valType="bool" updates="constant" name="flip"/>
         <Param val="Noto Sans" valType="str" updates="constant" name="font"/>
         <Param val="False" valType="bool" updates="constant" name="forceEndRoutine"/>
         <Param val="0.1" valType="num" updates="constant" name="granularity"/>
         <Param val="" valType="code" updates="None" name="initVal"/>
         <Param val="0,1,2,3,4,5,6,7" valType="list" updates="constant" name="labels"/>
-        <Param val="0.02" valType="num" updates="constant" name="letterHeight"/>
+        <Param val="0.05" valType="num" updates="constant" name="letterHeight"/>
         <Param val="ratingSlider" valType="code" updates="None" name="name"/>
         <Param val="" valType="num" updates="constant" name="opacity"/>
         <Param val="0" valType="num" updates="constant" name="ori"/>
         <Param val="(0, -0.33)" valType="list" updates="constant" name="pos"/>
         <Param val="False" valType="bool" updates="constant" name="readOnly"/>
         <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
-        <Param val="(0.7, 0.02)" valType="list" updates="constant" name="size"/>
+        <Param val="(0.7, 0.05)" valType="list" updates="constant" name="size"/>
         <Param val="" valType="code" updates="None" name="startEstim"/>
         <Param val="time (s)" valType="str" updates="None" name="startType"/>
         <Param val="0.0" valType="code" updates="None" name="startVal"/>

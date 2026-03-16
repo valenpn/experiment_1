@@ -321,10 +321,10 @@ async function experimentInit() {
   ratingSlider = new visual.Slider({
     win: psychoJS.window, name: 'ratingSlider',
     startValue: undefined,
-    size: [0.7, 0.02], pos: [0, (- 0.33)], ori: 0.0, units: psychoJS.window.units,
-    labels: [0, 1, 2, 3, 4, 5, 6, 7], fontSize: 0.02, ticks: [0, 1, 2, 3, 4, 5, 6, 7],
+    size: [0.7, 0.05], pos: [0, (- 0.33)], ori: 0.0, units: psychoJS.window.units,
+    labels: [0, 1, 2, 3, 4, 5, 6, 7], fontSize: 0.05, ticks: [0, 1, 2, 3, 4, 5, 6, 7],
     granularity: 0.1, style: ["SLIDER"],
-    color: new util.Color((0.1529, -0.1216, 0.7176)), markerColor: new util.Color([1.0, 1.0, 1.0]), lineColor: new util.Color('white'), 
+    color: new util.Color('LightGray'), markerColor: new util.Color('white'), lineColor: new util.Color('white'), 
     opacity: undefined, fontFamily: 'Noto Sans', bold: true, italic: false, depth: -4, 
     flip: false,
   });
