@@ -249,7 +249,7 @@ async function experimentInit() {
   ratingTrialClock = new util.Clock();
   // Run 'Begin Experiment' code from ratingCode
   TTIME_LIMIT = 8;
-  
+  document.body.style.cursor = 'none';
   all_questions = [
     ["liking", "How much do you LIKE the product?"],
     ["taste", "How TASTY do you think the product is?"],
