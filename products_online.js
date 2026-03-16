@@ -1079,22 +1079,39 @@ function ratingTrialRoutineBegin(snapshot) {
     ratingTrialMaxDurationReached = false;
     // update component parameters for each repeat
     // Run 'Begin Routine' code from ratingCode
-    questions_list = all_questions.copy();
-    Math.random.shuffle(questions_list);
+    // copy and shuffle questions
+    questions_list = [...all_questions];
+    
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+    shuffleArray(questions_list);
+    
     question_index = 0;
     trial_ratings = {};
     trial_rts = {};
     trial_init = {};
+    
     questionText.text = questions_list[question_index][1];
-    start_x = Math.random.uniform(((- SLIDER_WIDTH) / 2), (SLIDER_WIDTH / 2));
-    ratingMouse.setPos([start_x, (- 0.33)]);
-    init_val = ((((start_x + (SLIDER_WIDTH / 2)) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN)) + SLIDER_MIN);
-    init_val = util.round(init_val, 1);
+    
+    // random initial mouse x position along the slider
+    start_x = ((Math.random() * SLIDER_WIDTH) - (SLIDER_WIDTH / 2));
+    ratingMouse.setPos([start_x, -0.33]);
+    
+    // convert initial mouse position to 0-7 value
+    init_val = (((start_x + (SLIDER_WIDTH / 2)) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN)) + SLIDER_MIN;
+    init_val = Math.round(init_val * 10) / 10;
     init_val = Math.min(Math.max(init_val, SLIDER_MIN), SLIDER_MAX);
+    
     ratingSlider.reset();
     ratingSlider.markerPos = init_val;
-    ratingValueText.text = `Rating: ${util.pad(Number.parseFloat(init_val).toFixed(1), 1)}`;
+    ratingValueText.text = `Rating: ${init_val.toFixed(1)}`;
+    
     trial_init[questions_list[question_index][0]] = init_val;
+    
     questionClock.reset();
     click_ready = true;
     waiting_next_question = false;
@@ -1104,7 +1121,6 @@ function ratingTrialRoutineBegin(snapshot) {
     sliderCover.opacity = 0;
     warningText.opacity = 0;
     timeout_warning = false;
-    
     productImage.setImage(image_path);
     ratingSlider.reset()
     // setup some python lists for storing info about the ratingMouse
@@ -1138,9 +1154,8 @@ function ratingTrialRoutineBegin(snapshot) {
 }
 
 
-var mouse_x;
+var current_x;
 var current_val;
-var mouse_pressed;
 var prevButtonState;
 var _mouseButtons;
 var _mouseXYs;
@@ -1152,84 +1167,111 @@ function ratingTrialRoutineEachFrame() {
     frameN = frameN + 1;// number of completed frames (so 0 is the first frame)
     // update/draw components on each frame
     // Run 'Each Frame' code from ratingCode
-    mouse_x = ratingMouse.getPos()[0];
-    current_val = ((((mouse_x + (SLIDER_WIDTH / 2)) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN)) + SLIDER_MIN);
-    current_val = util.round(current_val, 1);
+    // current slider value from mouse x position
+    let mousePos = ratingMouse.getPos();
+    let current_x = mousePos[0];
+    
+    // clamp x to slider width
+    current_x = Math.max((-SLIDER_WIDTH / 2), Math.min((SLIDER_WIDTH / 2), current_x));
+    
+    // convert x position to slider value
+    let current_val = (((current_x + (SLIDER_WIDTH / 2)) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN)) + SLIDER_MIN;
+    current_val = Math.round(current_val * 10) / 10;
     current_val = Math.min(Math.max(current_val, SLIDER_MIN), SLIDER_MAX);
-    mouse_pressed = ratingMouse.getPressed()[0];
-    if (waiting_next_question) {
-        productImage.opacity = 0;
-        questionText.text = "";
-        ratingValueText.text = "";
-        leftAnchor.text = "";
-        rightAnchor.text = "";
+    
+    // update slider marker and text
+    ratingSlider.markerPos = current_val;
+    ratingValueText.text = `Rating: ${current_val.toFixed(1)}`;
+    
+    // if time limit reached and no response yet
+    if ((questionClock.getTime() >= TTIME_LIMIT) && !timeout_warning) {
+        timeout_warning = true;
+        warningText.opacity = 1;
         sliderCover.opacity = 1;
-        if (timeout_warning) {
-            warningText.opacity = 1;
-            warningText.text = "Please answer before 8 seconds";
-        } else {
-            warningText.opacity = 0;
-        }
-        if ((delayClock.getTime() >= delay_duration)) {
-            waiting_next_question = false;
-            productImage.opacity = 1;
-            warningText.opacity = 0;
-            sliderCover.opacity = 0;
-            leftAnchor.text = "Not at all";
-            rightAnchor.text = "Very much";
-            questionText.text = questions_list[question_index][1];
-            start_x = Math.random.uniform(((- SLIDER_WIDTH) / 2), (SLIDER_WIDTH / 2));
-            ratingMouse.setPos([start_x, (- 0.33)]);
-            init_val = ((((start_x + (SLIDER_WIDTH / 2)) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN)) + SLIDER_MIN);
-            init_val = util.round(init_val, 1);
-            init_val = Math.min(Math.max(init_val, SLIDER_MIN), SLIDER_MAX);
-            ratingSlider.reset();
-            ratingSlider.markerPos = init_val;
-            ratingValueText.text = `Rating: ${util.pad(Number.parseFloat(init_val).toFixed(1), 1)}`;
-            trial_init[questions_list[question_index][0]] = init_val;
-            questionClock.reset();
-        }
-    } else {
-        productImage.opacity = 1;
-        leftAnchor.text = "Not at all";
-        rightAnchor.text = "Very much";
-        ratingSlider.markerPos = current_val;
-        ratingValueText.text = `Rating: ${util.pad(Number.parseFloat(current_val).toFixed(1), 1)}`;
-        if ((questionClock.getTime() >= TIME_LIMIT)) {
-            q_name = questions_list[question_index][0];
-            trial_ratings[q_name] = null;
-            trial_rts[q_name] = null;
-            timeout_warning = true;
-            delay_duration = warning_delay;
-            question_index += 1;
-            if ((question_index >= questions_list.length)) {
-                continueRoutine = false;
-            } else {
-                waiting_next_question = true;
-                delayClock.reset();
-            }
-        } else {
-            if ((mouse_pressed && click_ready)) {
-                click_ready = false;
-                q_name = questions_list[question_index][0];
-                trial_ratings[q_name] = current_val;
-                trial_rts[q_name] = questionClock.getTime();
-                timeout_warning = false;
-                delay_duration = normal_delay;
-                question_index += 1;
-                if ((question_index >= questions_list.length)) {
-                    continueRoutine = false;
-                } else {
-                    waiting_next_question = true;
-                    delayClock.reset();
-                }
-            }
-        }
-    }
-    if ((! mouse_pressed)) {
-        click_ready = true;
+        delay_duration = warning_delay;
+        click_ready = false;
+        waiting_next_question = true;
+    
+        // save current response automatically
+        trial_ratings[questions_list[question_index][0]] = current_val;
+        trial_rts[questions_list[question_index][0]] = questionClock.getTime();
     }
     
+    // after warning delay, move to next question
+    if (waiting_next_question && (questionClock.getTime() >= TTIME_LIMIT + delay_duration)) {
+        question_index += 1;
+    
+        if (question_index >= questions_list.length) {
+            continueRoutine = false;
+        } else {
+            questionText.text = questions_list[question_index][1];
+    
+            // random initial mouse x position along the slider
+            start_x = ((Math.random() * SLIDER_WIDTH) - (SLIDER_WIDTH / 2));
+            ratingMouse.setPos([start_x, -0.33]);
+    
+            // convert initial mouse position to 0-7 value
+            init_val = (((start_x + (SLIDER_WIDTH / 2)) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN)) + SLIDER_MIN;
+            init_val = Math.round(init_val * 10) / 10;
+            init_val = Math.min(Math.max(init_val, SLIDER_MIN), SLIDER_MAX);
+    
+            ratingSlider.reset();
+            ratingSlider.markerPos = init_val;
+            ratingValueText.text = `Rating: ${init_val.toFixed(1)}`;
+    
+            trial_init[questions_list[question_index][0]] = init_val;
+    
+            questionClock.reset();
+            click_ready = true;
+            waiting_next_question = false;
+            delay_duration = normal_delay;
+            sliderCover.opacity = 0;
+            warningText.opacity = 0;
+            timeout_warning = false;
+        }
+    }
+    
+    // check for mouse click response
+    if (click_ready && ratingMouse.getPressed()[0]) {
+        click_ready = false;
+    
+        trial_ratings[questions_list[question_index][0]] = current_val;
+        trial_rts[questions_list[question_index][0]] = questionClock.getTime();
+    
+        sliderCover.opacity = 1;
+        waiting_next_question = true;
+    }
+    
+    // after normal click delay, move to next question
+    if (waiting_next_question && !timeout_warning && (questionClock.getTime() >= trial_rts[questions_list[question_index][0]] + normal_delay)) {
+        question_index += 1;
+    
+        if (question_index >= questions_list.length) {
+            continueRoutine = false;
+        } else {
+            questionText.text = questions_list[question_index][1];
+    
+            // random initial mouse x position along the slider
+            start_x = ((Math.random() * SLIDER_WIDTH) - (SLIDER_WIDTH / 2));
+            ratingMouse.setPos([start_x, -0.33]);
+    
+            // convert initial mouse position to 0-7 value
+            init_val = (((start_x + (SLIDER_WIDTH / 2)) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN)) + SLIDER_MIN;
+            init_val = Math.round(init_val * 10) / 10;
+            init_val = Math.min(Math.max(init_val, SLIDER_MIN), SLIDER_MAX);
+    
+            ratingSlider.reset();
+            ratingSlider.markerPos = init_val;
+            ratingValueText.text = `Rating: ${init_val.toFixed(1)}`;
+    
+            trial_init[questions_list[question_index][0]] = init_val;
+    
+            questionClock.reset();
+            click_ready = true;
+            waiting_next_question = false;
+            sliderCover.opacity = 0;
+        }
+    }
     
     // *productImage* updates
     if (t >= 0.0 && productImage.status === PsychoJS.Status.NOT_STARTED) {
@@ -1415,16 +1457,17 @@ function ratingTrialRoutineEnd(snapshot) {
     }
     psychoJS.experiment.addData('ratingTrial.stopped', globalClock.getTime());
     // Run 'End Routine' code from ratingCode
-    psychoJS.experiment.addData("liking", trial_ratings.get("liking"));
-    psychoJS.experiment.addData("liking_initMouse", trial_init.get("liking"));
-    psychoJS.experiment.addData("liking_RT", trial_rts.get("liking"));
-    psychoJS.experiment.addData("taste", trial_ratings.get("taste"));
-    psychoJS.experiment.addData("taste_initMouse", trial_init.get("taste"));
-    psychoJS.experiment.addData("taste_RT", trial_rts.get("taste"));
-    psychoJS.experiment.addData("health", trial_ratings.get("health"));
-    psychoJS.experiment.addData("health_initMouse", trial_init.get("health"));
-    psychoJS.experiment.addData("health_RT", trial_rts.get("health"));
+    psychoJS.experiment.addData("liking", trial_ratings["liking"]);
+    psychoJS.experiment.addData("liking_initMouse", trial_init["liking"]);
+    psychoJS.experiment.addData("liking_RT", trial_rts["liking"]);
     
+    psychoJS.experiment.addData("taste", trial_ratings["taste"]);
+    psychoJS.experiment.addData("taste_initMouse", trial_init["taste"]);
+    psychoJS.experiment.addData("taste_RT", trial_rts["taste"]);
+    
+    psychoJS.experiment.addData("health", trial_ratings["health"]);
+    psychoJS.experiment.addData("health_initMouse", trial_init["health"]);
+    psychoJS.experiment.addData("health_RT", trial_rts["health"]);
     psychoJS.experiment.addData('ratingSlider.response', ratingSlider.getRating());
     psychoJS.experiment.addData('ratingSlider.rt', ratingSlider.getRT());
     // store data for psychoJS.experiment (ExperimentHandler)
