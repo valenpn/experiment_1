@@ -1060,6 +1060,7 @@ var timeout_warning;
 var normal_delay;
 var warning_delay;
 var next_question_time;
+var showWarning;
 var gotValidClick;
 var ratingTrialMaxDuration;
 var ratingTrialComponents;
@@ -1093,7 +1094,6 @@ function ratingTrialRoutineBegin(snapshot) {
     
     questionText.text = questions_list[question_index][1];
     
-    // random initial slider position
     start_x = ((Math.random() * SLIDER_WIDTH) - (SLIDER_WIDTH / 2));
     current_x = start_x;
     mouse_has_moved = false;
@@ -1117,8 +1117,7 @@ function ratingTrialRoutineBegin(snapshot) {
     warning_delay = 1.5;
     next_question_time = -1;
     
-    // hide warning at start
-    warningText.setAutoDraw(false);
+    showWarning = false;
     productImage.setImage(image_path);
     ratingSlider.reset()
     // setup some python lists for storing info about the ratingMouse
@@ -1165,7 +1164,6 @@ function ratingTrialRoutineEachFrame() {
     frameN = frameN + 1;// number of completed frames (so 0 is the first frame)
     // update/draw components on each frame
     // Run 'Each Frame' code from ratingCode
-    // only update slider while active
     if (!waiting_next_question) {
         let mousePos = ratingMouse.getPos();
     
@@ -1174,32 +1172,27 @@ function ratingTrialRoutineEachFrame() {
             mouse_has_moved = true;
         }
     
-        // clamp x to slider width
         current_x = Math.max((-SLIDER_WIDTH / 2), Math.min((SLIDER_WIDTH / 2), current_x));
     
-        // convert x to slider value
         let current_val = (((current_x + (SLIDER_WIDTH / 2)) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN)) + SLIDER_MIN;
         current_val = Math.round(current_val * 10) / 10;
         current_val = Math.min(Math.max(current_val, SLIDER_MIN), SLIDER_MAX);
     
-        // update slider marker and text
         ratingSlider.markerPos = current_val;
         ratingValueText.text = `Rating: ${current_val.toFixed(1)}`;
     
-        // timeout
         if ((questionClock.getTime() >= TTIME_LIMIT) && !timeout_warning) {
             timeout_warning = true;
             click_ready = false;
             waiting_next_question = true;
             next_question_time = questionClock.getTime() + warning_delay;
     
-            warningText.setAutoDraw(true);
+            showWarning = true;
     
             trial_ratings[questions_list[question_index][0]] = current_val;
             trial_rts[questions_list[question_index][0]] = questionClock.getTime();
         }
     
-        // click response
         if (click_ready && ratingMouse.getPressed()[0]) {
             click_ready = false;
             waiting_next_question = true;
@@ -1210,7 +1203,6 @@ function ratingTrialRoutineEachFrame() {
         }
     }
     
-    // move to next question after delay
     if (waiting_next_question && questionClock.getTime() >= next_question_time) {
         question_index += 1;
     
@@ -1238,10 +1230,10 @@ function ratingTrialRoutineEachFrame() {
             waiting_next_question = false;
             timeout_warning = false;
             next_question_time = -1;
-    
-            warningText.setAutoDraw(false);
+            showWarning = false;
         }
     }
+    
     
     // *productImage* updates
     if (t >= 0.0 && productImage.status === PsychoJS.Status.NOT_STARTED) {

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 This experiment was created using PsychoPy3 Experiment Builder (v2025.1.1),
-    on Mon Mar 16 12:30:10 2026
+    on Mon Mar 16 14:33:56 2026
 If you publish work using this script the most relevant publication is:
 
     Peirce J, Gray JR, Simpson S, MacAskill M, Höchenberger R, Sogo H, Kastman E, Lindeløv JK. (2019) 
@@ -424,23 +424,21 @@ def run(expInfo, thisExp, win, globalClock=None, thisSession=None):
     
     # --- Initialize components for Routine "ratingTrial" ---
     # Run 'Begin Experiment' code from ratingCode
-    import random
-    from psychopy import core
-    
     TIME_LIMIT = 8
     
     all_questions = [
-        ('liking', 'How much do you LIKE the product?'),
-        ('taste', 'How TASTY do you think the product is?'),
-        ('health', 'How HEALTHY do you think the product is?')
+        ['liking', 'How much do you LIKE the product?'],
+        ['taste', 'How TASTY do you think the product is?'],
+        ['health', 'How HEALTHY do you think the product is?']
     ]
     
-    questionClock = core.Clock()
-    delayClock = core.Clock()
     SLIDER_MIN = 0
     SLIDER_MAX = 7
     SLIDER_WIDTH = 0.72
+    SLIDER_Y = -0.33
     
+    questionClock = core.Clock()
+    delayClock = core.Clock()
     productImage = visual.ImageStim(
         win=win,
         name='productImage', 
@@ -519,7 +517,7 @@ def run(expInfo, thisExp, win, globalClock=None, thisSession=None):
     }
     memory_target_occurrence = {}
     for prod in ['Tapuchips', 'Nutella', 'Cheetos', 'CocaColaZero']:
-        memory_target_occurrence[prod] = random.choice([1, 2, 3])
+        memory_target_occurrence[prod] = randint(1, 4)
     all_products = ["Allin", "Cheetos", "ChocolatePara", "CocaColaZero", "Cornflakes", "MangoFree", "Nutella", "Slimdelis", "Tamar", "Tapuchips", "TimTam", "WaffleCrisp", "XL"]
     memoryQuestion = visual.TextStim(win=win, name='memoryQuestion',
         text='Which product was shown in the previous trial?\n\nUse keys 1, 2, or 3 to respond',
@@ -884,18 +882,16 @@ def run(expInfo, thisExp, win, globalClock=None, thisSession=None):
     all_trials = data.importConditions('image_table.csv')
     row_order = list(range(len(all_trials)))
     
-    def has_adjacent_same_product(order):
-        for i in range(len(order) - 1):
-            if all_trials[order[i]]['product_id'] == all_trials[order[i + 1]]['product_id']:
-                return True
-        return False
+    valid_order = False
+    while not valid_order:
+        shuffle(row_order)
+        valid_order = True
+        for i in range(len(row_order) - 1):
+            if all_trials[row_order[i]]['product_id'] == all_trials[row_order[i + 1]]['product_id']:
+                valid_order = False
+                break
     
-    random.shuffle(row_order)
-    while has_adjacent_same_product(row_order):
-        random.shuffle(row_order)
-    
-    selected_rows_str = ",".join(str(i) for i in row_order)
-    
+    selected_rows_str = ",".join([str(i) for i in row_order])
     continueRoutine = False
     # store start times for setOrder
     setOrder.tStartRefresh = win.getFutureFlipTime(clock=globalClock)
