@@ -1121,36 +1121,16 @@ function ratingTrialRoutineBegin(snapshot) {
     rightAnchor.text = "Very much";
     
     // random initial slider position
-    // let start_x = (Math.random() * SLIDER_WIDTH) - (SLIDER_WIDTH / 2);
-    // current_x = start_x;
-    // let init_val = ((current_x + SLIDER_WIDTH / 2) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN) + SLIDER_MIN;
-    // init_val = Math.min(Math.max(Number.parseFloat(init_val.toFixed(1)), SLIDER_MIN), SLIDER_MAX);
-    
-    // ratingSlider.reset();
-    // ratingSlider.markerPos = init_val;
-    // ratingValueText.text = "Rating: " + init_val.toFixed(1);
-    // 1. Hide the real mouse cursor immediately
-    document.body.style.cursor = 'none';
-    
-    // 2. Generate the random starting position for the slider (not the mouse)
     let start_x = (Math.random() * SLIDER_WIDTH) - (SLIDER_WIDTH / 2);
+    current_x = start_x;
+    let init_val = ((current_x + SLIDER_WIDTH / 2) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN) + SLIDER_MIN;
+    init_val = Math.min(Math.max(Number.parseFloat(init_val.toFixed(1)), SLIDER_MIN), SLIDER_MAX);
     
-    // 3. Map that position to your 0.1 decimal scale
-    let init_val = ((start_x + SLIDER_WIDTH / 2) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN) + SLIDER_MIN;
-    init_val = parseFloat(init_val.toFixed(1));
-    
-    // 4. Force the slider to show the marker at this random spot
     ratingSlider.reset();
     ratingSlider.markerPos = init_val;
-    ratingSlider.rating = init_val; 
-    
-    // 5. Update your text label
     ratingValueText.text = "Rating: " + init_val.toFixed(1);
+    
     trial_init[questions_list[question_index][0]] = init_val;
-    
-    
-    
-    
     
     // state
     waiting_next_question = false;
@@ -1203,20 +1183,6 @@ function ratingTrialRoutineEachFrame() {
     frameN = frameN + 1;// number of completed frames (so 0 is the first frame)
     // update/draw components on each frame
     // Run 'Each Frame' code from ratingCode
-    // Check if the participant has moved the mouse or clicked
-    if (ratingMouse.getPos()[0] !== 0 || ratingMouse.getPressed()[0] === 1) {
-        // Show the mouse again once they start interacting
-        document.body.style.cursor = 'default';
-    }
-    
-    // Update the slider logic as usual...
-    if (ratingSlider.status === PsychoJS.Status.STARTED) {
-        let check_val = ratingSlider.getRating();
-        if (check_val !== undefined) {
-            ratingValueText.text = "Rating: " + check_val.toFixed(1);
-        }
-    }
-    
     
     // 1. Get mouse / slider state
     let mousePos = ratingMouse.getPos();
