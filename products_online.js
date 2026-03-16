@@ -190,6 +190,7 @@ var leftAnchor;
 var rightAnchor;
 var warningText;
 var memoryTrialClock;
+var interaction_started;
 var MEMORY_TRIGGERS;
 var memory_counts;
 var memory_target_occurrence;
@@ -388,7 +389,7 @@ async function experimentInit() {
   // Initialize components for Routine "memoryTrial"
   memoryTrialClock = new util.Clock();
   // Run 'Begin Experiment' code from memoryCode
-  let interaction_started = false;
+  interaction_started = false;
   MEMORY_TRIGGERS = {"Tapuchips": 1, "Nutella": 1, "Cheetos": 1, "CocaColaZero": 1};
   memory_counts = {"Tapuchips": 0, "Nutella": 0, "Cheetos": 0, "CocaColaZero": 0};
   memory_target_occurrence = {};
@@ -1513,7 +1514,6 @@ function ratingTrialRoutineEnd(snapshot) {
 
 
 var memoryTrialMaxDurationReached;
-var interaction_started;
 var _pj;
 var show_memory;
 var memory_correct_product;
