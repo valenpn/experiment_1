@@ -123,6 +123,9 @@ psychoJS.start({
 
 psychoJS.experimentLogger.setLevel(core.Logger.ServerLevel.INFO);
 
+
+var currentLoop;
+var frameDur;
 async function updateInfo() {
   currentLoop = psychoJS.experiment;  // right now there are no loops
   expInfo['date'] = util.MonotonicClock.getDateStr();  // add a simple timestamp
@@ -150,6 +153,49 @@ async function updateInfo() {
   return Scheduler.Event.NEXT;
 }
 
+
+var WelcomeClock;
+var text_welcome;
+var key_resp;
+var instructionsClock;
+var text_instructions;
+var key_resp_instructions;
+var setOrderClock;
+var fixationClock;
+var text_fixation;
+var ratingTrialClock;
+var TTIME_LIMIT;
+var all_questions;
+var SLIDER_MIN;
+var SLIDER_MAX;
+var SLIDER_WIDTH;
+var SLIDER_Y;
+var questionClock;
+var delayClock;
+var productImage;
+var questionText;
+var ratingValueText;
+var ratingSlider;
+var sliderCover;
+var ratingMouse;
+var leftAnchor;
+var rightAnchor;
+var warningText;
+var memoryTrialClock;
+var MEMORY_TRIGGERS;
+var memory_counts;
+var memory_target_occurrence;
+var all_products;
+var memoryQuestion;
+var opt1Text;
+var opt2Text;
+var opt3Text;
+var memoryKey;
+var thanksClock;
+var endText;
+var endKey;
+var globalClock;
+var routineTimer;
 async function experimentInit() {
   // Initialize components for Routine "Welcome"
   WelcomeClock = new util.Clock();
@@ -407,6 +453,15 @@ async function experimentInit() {
   return Scheduler.Event.NEXT;
 }
 
+
+var t;
+var frameN;
+var continueRoutine;
+var routineForceEnded;
+var WelcomeMaxDurationReached;
+var _key_resp_allKeys;
+var WelcomeMaxDuration;
+var WelcomeComponents;
 function WelcomeRoutineBegin(snapshot) {
   return async function () {
     TrialHandler.fromSnapshot(snapshot); // ensure that .thisN vals are up to date
@@ -437,6 +492,7 @@ function WelcomeRoutineBegin(snapshot) {
     return Scheduler.Event.NEXT;
   }
 }
+
 
 function WelcomeRoutineEachFrame() {
   return async function () {
@@ -513,6 +569,7 @@ function WelcomeRoutineEachFrame() {
   };
 }
 
+
 function WelcomeRoutineEnd(snapshot) {
   return async function () {
     //--- Ending Routine 'Welcome' ---
@@ -545,6 +602,11 @@ function WelcomeRoutineEnd(snapshot) {
   }
 }
 
+
+var instructionsMaxDurationReached;
+var _key_resp_instructions_allKeys;
+var instructionsMaxDuration;
+var instructionsComponents;
 function instructionsRoutineBegin(snapshot) {
   return async function () {
     TrialHandler.fromSnapshot(snapshot); // ensure that .thisN vals are up to date
@@ -575,6 +637,7 @@ function instructionsRoutineBegin(snapshot) {
     return Scheduler.Event.NEXT;
   }
 }
+
 
 function instructionsRoutineEachFrame() {
   return async function () {
@@ -651,6 +714,7 @@ function instructionsRoutineEachFrame() {
   };
 }
 
+
 function instructionsRoutineEnd(snapshot) {
   return async function () {
     //--- Ending Routine 'instructions' ---
@@ -683,6 +747,13 @@ function instructionsRoutineEnd(snapshot) {
   }
 }
 
+
+var setOrderMaxDurationReached;
+var all_trials;
+var row_order;
+var selected_rows_str;
+var setOrderMaxDuration;
+var setOrderComponents;
 function setOrderRoutineBegin(snapshot) {
   return async function () {
     TrialHandler.fromSnapshot(snapshot); // ensure that .thisN vals are up to date
@@ -734,6 +805,7 @@ function setOrderRoutineBegin(snapshot) {
   }
 }
 
+
 function setOrderRoutineEachFrame() {
   return async function () {
     //--- Loop for each frame of Routine 'setOrder' ---
@@ -768,6 +840,7 @@ function setOrderRoutineEachFrame() {
   };
 }
 
+
 function setOrderRoutineEnd(snapshot) {
   return async function () {
     //--- Ending Routine 'setOrder' ---
@@ -788,6 +861,8 @@ function setOrderRoutineEnd(snapshot) {
   }
 }
 
+
+var main_loop;
 function main_loopLoopBegin(main_loopLoopScheduler, snapshot) {
   return async function() {
     TrialHandler.fromSnapshot(snapshot); // update internal variables (.thisN etc) of the loop
@@ -823,6 +898,7 @@ function main_loopLoopBegin(main_loopLoopScheduler, snapshot) {
   }
 }
 
+
 async function main_loopLoopEnd() {
   // terminate loop
   psychoJS.experiment.removeLoop(main_loop);
@@ -833,6 +909,7 @@ async function main_loopLoopEnd() {
     currentLoop = psychoJS.experiment;  // so we use addData from the experiment
   return Scheduler.Event.NEXT;
 }
+
 
 function main_loopLoopEndIteration(scheduler, snapshot) {
   // ------Prepare for next entry------
@@ -853,6 +930,10 @@ function main_loopLoopEndIteration(scheduler, snapshot) {
   };
 }
 
+
+var fixationMaxDurationReached;
+var fixationMaxDuration;
+var fixationComponents;
 function fixationRoutineBegin(snapshot) {
   return async function () {
     TrialHandler.fromSnapshot(snapshot); // ensure that .thisN vals are up to date
@@ -880,6 +961,8 @@ function fixationRoutineBegin(snapshot) {
   }
 }
 
+
+var frameRemains;
 function fixationRoutineEachFrame() {
   return async function () {
     //--- Loop for each frame of Routine 'fixation' ---
@@ -939,6 +1022,7 @@ function fixationRoutineEachFrame() {
   };
 }
 
+
 function fixationRoutineEnd(snapshot) {
   return async function () {
     //--- Ending Routine 'fixation' ---
@@ -962,6 +1046,25 @@ function fixationRoutineEnd(snapshot) {
   }
 }
 
+
+var ratingTrialMaxDurationReached;
+var questions_list;
+var question_index;
+var trial_ratings;
+var trial_rts;
+var trial_init;
+var start_x;
+var current_x;
+var init_val;
+var click_ready;
+var waiting_next_question;
+var timeout_warning;
+var normal_delay;
+var warning_delay;
+var delay_duration;
+var gotValidClick;
+var ratingTrialMaxDuration;
+var ratingTrialComponents;
 function ratingTrialRoutineBegin(snapshot) {
   return async function () {
     TrialHandler.fromSnapshot(snapshot); // ensure that .thisN vals are up to date
@@ -979,7 +1082,7 @@ function ratingTrialRoutineBegin(snapshot) {
     // Run 'Begin Routine' code from ratingCode
     questions_list = [...all_questions];
     
-    // shuffle questions
+    // Fisher-Yates Shuffle
     for (let i = questions_list.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [questions_list[i], questions_list[j]] = [questions_list[j], questions_list[i]];
@@ -990,32 +1093,35 @@ function ratingTrialRoutineBegin(snapshot) {
     trial_rts = {};
     trial_init = {};
     
+    // Initial Question Setup
     questionText.text = questions_list[question_index][1];
     
-    start_x = ((Math.random() * SLIDER_WIDTH) - (SLIDER_WIDTH / 2));
+    // Random Start Position
+    start_x = (Math.random() * SLIDER_WIDTH) - (SLIDER_WIDTH / 2);
     current_x = start_x;
-    mouse_has_moved = false;
     
-    init_val = (((start_x + (SLIDER_WIDTH / 2)) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN)) + SLIDER_MIN;
-    init_val = Math.round(init_val * 10) / 10;
-    init_val = Math.min(Math.max(init_val, SLIDER_MIN), SLIDER_MAX);
+    init_val = ((current_x + (SLIDER_WIDTH / 2)) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN) + SLIDER_MIN;
+    init_val = Math.min(Math.max(Number.parseFloat(init_val.toFixed(1)), SLIDER_MIN), SLIDER_MAX);
     
     ratingSlider.reset();
     ratingSlider.markerPos = init_val;
-    ratingValueText.text = `Rating: ${init_val.toFixed(1)}`;
+    ratingValueText.text = "Rating: " + init_val.toFixed(1);
     
     trial_init[questions_list[question_index][0]] = init_val;
     
+    // State Variables
     questionClock.reset();
+    delayClock.reset();
     click_ready = true;
     waiting_next_question = false;
     timeout_warning = false;
-    
     normal_delay = 0.5;
     warning_delay = 1.5;
-    next_question_time = -1;
+    delay_duration = normal_delay;
     
-    showWarning = false;
+    // Reset visibility
+    warningText.opacity = 0;
+    productImage.opacity = 1;
     productImage.setImage(image_path);
     ratingSlider.reset()
     // setup some python lists for storing info about the ratingMouse
@@ -1048,6 +1154,11 @@ function ratingTrialRoutineBegin(snapshot) {
   }
 }
 
+
+var current_val;
+var prevButtonState;
+var _mouseButtons;
+var _mouseXYs;
 function ratingTrialRoutineEachFrame() {
   return async function () {
     //--- Loop for each frame of Routine 'ratingTrial' ---
@@ -1056,88 +1167,101 @@ function ratingTrialRoutineEachFrame() {
     frameN = frameN + 1;// number of completed frames (so 0 is the first frame)
     // update/draw components on each frame
     // Run 'Each Frame' code from ratingCode
-    # 1. Update positions
-    mouse_x = ratingMouse.getPos()[0]
-    current_val = ((mouse_x + SLIDER_WIDTH / 2) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN) + SLIDER_MIN
-    current_val = min(max(round(current_val, 1), SLIDER_MIN), SLIDER_MAX)
-    mouse_pressed = ratingMouse.getPressed()[0]
+    // 1. Get Mouse/Slider Position
+    let mousePos = ratingMouse.getPos();
+    let mouse_pressed = ratingMouse.getPressed()[0] === 1;
     
-    # 2. Black screen / Warning delay state
-    if waiting_next_question:
-        productImage.opacity = 0
-        questionText.text = ""
-        ratingValueText.text = ""
-        leftAnchor.text = ""
-        rightAnchor.text = ""
-        sliderCover.opacity = 1
+    if (mousePos && Math.abs(mousePos[0]) > 0.001) {
+        current_x = mousePos[0];
+    }
+    current_x = Math.max(-SLIDER_WIDTH / 2, Math.min(SLIDER_WIDTH / 2, current_x));
+    
+    let current_val = ((current_x + SLIDER_WIDTH / 2) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN) + SLIDER_MIN;
+    current_val = Math.min(Math.max(Number.parseFloat(current_val.toFixed(1)), SLIDER_MIN), SLIDER_MAX);
+    // 2. Black screen / Warning delay state
+    if (waiting_next_question) {
+        productImage.opacity = 0;
+        questionText.text = "";
+        ratingValueText.text = "";
+        leftAnchor.text = "";
+        rightAnchor.text = "";
+        sliderCover.opacity = 1;
         
-        if timeout_warning:
-            warningText.opacity = 1
-            warningText.text = "Please answer before 8 seconds"
-        else:
-            warningText.opacity = 0
+        if (timeout_warning) {
+            warningText.text = "Please answer before 8 seconds";
+            warningText.opacity = 1;
+        } else {
+            warningText.opacity = 0;
+        }
     
-        if delayClock.getTime() >= delay_duration:
-            waiting_next_question = False
+        // Check if transition delay is over
+        if (delayClock.getTime() >= delay_duration) {
+            waiting_next_question = false;
             
-            # Check if we should end the routine now
-            if question_index >= len(questions_list):
-                continueRoutine = False
-            else:
-                # Only run this if there IS a next question
-                productImage.opacity = 1
-                warningText.opacity = 0
-                sliderCover.opacity = 0
-                leftAnchor.text = "Not at all"
-                rightAnchor.text = "Very much"
-                questionText.text = questions_list[question_index][1]
+            if (question_index >= questions_list.length) {
+                continueRoutine = false;
+            } else {
+                // Setup next question
+                productImage.opacity = 1;
+                warningText.opacity = 0;
+                sliderCover.opacity = 0;
+                leftAnchor.text = "Not at all";
+                rightAnchor.text = "Very much";
+                questionText.text = questions_list[question_index][1];
+                
+                let next_start_x = (Math.random() * SLIDER_WIDTH) - (SLIDER_WIDTH / 2);
+                current_x = next_start_x;
     
-                start_x = random.uniform(-SLIDER_WIDTH / 2, SLIDER_WIDTH / 2)
-                ratingMouse.setPos((start_x, -0.33))
+                let next_init_val = ((current_x + SLIDER_WIDTH / 2) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN) + SLIDER_MIN;
+                next_init_val = Math.min(Math.max(Number.parseFloat(next_init_val.toFixed(1)), SLIDER_MIN), SLIDER_MAX);
+                
+                ratingSlider.reset();
+                ratingSlider.markerPos = next_init_val;
+                ratingValueText.text = "Rating: " + next_init_val.toFixed(1);
+                trial_init[questions_list[question_index][0]] = next_init_val;
+                questionClock.reset();
+            }
+        }
+    } 
+    // 3. Active Question State
+    else {
+        sliderCover.opacity = 0;
+        warningText.opacity = 0;
+        productImage.opacity = 1;
+        leftAnchor.text = "Not at all";
+        rightAnchor.text = "Very much";
+        
+        ratingSlider.markerPos = current_val;
+        ratingValueText.text = "Rating: " + current_val.toFixed(1);
     
-                init_val = ((start_x + SLIDER_WIDTH / 2) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN) + SLIDER_MIN
-                init_val = min(max(round(init_val, 1), SLIDER_MIN), SLIDER_MAX)
+        // Timeout logic (8 seconds)
+        if (questionClock.getTime() >= 8.0) {
+            let q_name = questions_list[question_index][0];
+            trial_ratings[q_name] = null;
+            trial_rts[q_name] = null;
+            timeout_warning = true;
+            delay_duration = warning_delay;
+            question_index += 1;
+            waiting_next_question = true;
+            delayClock.reset();
+        }
+        // Click logic
+        else if (mouse_pressed && click_ready) {
+            click_ready = false;
+            let q_name = questions_list[question_index][0];
+            trial_ratings[q_name] = current_val;
+            trial_rts[q_name] = questionClock.getTime();
+            timeout_warning = false;
+            delay_duration = normal_delay;
+            question_index += 1;
+            waiting_next_question = true;
+            delayClock.reset();
+        }
+    }
     
-                ratingSlider.reset()
-                ratingSlider.markerPos = init_val
-                ratingValueText.text = f"Rating: {init_val:.1f}"
-                trial_init[questions_list[question_index][0]] = init_val
-                questionClock.reset()
-    
-    # 3. Normal question state
-    else:
-        productImage.opacity = 1
-        leftAnchor.text = "Not at all"
-        rightAnchor.text = "Very much"
-        ratingSlider.markerPos = current_val
-        ratingValueText.text = f"Rating: {current_val:.1f}"
-    
-        # Check for timeout
-        if questionClock.getTime() >= TIME_LIMIT:
-            q_name = questions_list[question_index][0]
-            trial_ratings[q_name] = None
-            trial_rts[q_name] = None
-            timeout_warning = True
-            delay_duration = warning_delay
-            question_index += 1
-            waiting_next_question = True
-            delayClock.reset()
-    
-        # Check for click confirmation
-        elif mouse_pressed and click_ready:
-            click_ready = False
-            q_name = questions_list[question_index][0]
-            trial_ratings[q_name] = current_val
-            trial_rts[q_name] = questionClock.getTime()
-            timeout_warning = False
-            delay_duration = normal_delay
-            question_index += 1
-            waiting_next_question = True
-            delayClock.reset()
-    
-    # re-arm click
-    if not mouse_pressed:
-        click_ready = True
+    if (!mouse_pressed) {
+        click_ready = true;
+    }
     
     // *productImage* updates
     if (t >= 0.0 && productImage.status === PsychoJS.Status.NOT_STARTED) {
@@ -1312,6 +1436,7 @@ function ratingTrialRoutineEachFrame() {
   };
 }
 
+
 function ratingTrialRoutineEnd(snapshot) {
   return async function () {
     //--- Ending Routine 'ratingTrial' ---
@@ -1354,6 +1479,14 @@ function ratingTrialRoutineEnd(snapshot) {
   }
 }
 
+
+var memoryTrialMaxDurationReached;
+var _pj;
+var show_memory;
+var memory_correct_product;
+var _memoryKey_allKeys;
+var memoryTrialMaxDuration;
+var memoryTrialComponents;
 function memoryTrialRoutineBegin(snapshot) {
   return async function () {
     TrialHandler.fromSnapshot(snapshot); // ensure that .thisN vals are up to date
@@ -1441,6 +1574,7 @@ function memoryTrialRoutineBegin(snapshot) {
     return Scheduler.Event.NEXT;
   }
 }
+
 
 function memoryTrialRoutineEachFrame() {
   return async function () {
@@ -1562,6 +1696,9 @@ function memoryTrialRoutineEachFrame() {
   };
 }
 
+
+var chosen_product;
+var memory_accuracy;
 function memoryTrialRoutineEnd(snapshot) {
   return async function () {
     //--- Ending Routine 'memoryTrial' ---
@@ -1621,6 +1758,11 @@ function memoryTrialRoutineEnd(snapshot) {
   }
 }
 
+
+var thanksMaxDurationReached;
+var _endKey_allKeys;
+var thanksMaxDuration;
+var thanksComponents;
 function thanksRoutineBegin(snapshot) {
   return async function () {
     TrialHandler.fromSnapshot(snapshot); // ensure that .thisN vals are up to date
@@ -1651,6 +1793,7 @@ function thanksRoutineBegin(snapshot) {
     return Scheduler.Event.NEXT;
   }
 }
+
 
 function thanksRoutineEachFrame() {
   return async function () {
@@ -1727,6 +1870,7 @@ function thanksRoutineEachFrame() {
   };
 }
 
+
 function thanksRoutineEnd(snapshot) {
   return async function () {
     //--- Ending Routine 'thanks' ---
@@ -1759,12 +1903,14 @@ function thanksRoutineEnd(snapshot) {
   }
 }
 
+
 function importConditions(currentLoop) {
   return async function () {
     psychoJS.importAttributes(currentLoop.getCurrentTrial());
     return Scheduler.Event.NEXT;
     };
 }
+
 
 async function quitPsychoJS(message, isCompleted) {
   // Check for and save orphaned data
