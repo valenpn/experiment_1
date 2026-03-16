@@ -366,12 +366,19 @@ async function experimentInit() {
   MEMORY_TRIGGERS = {"Tapuchips": 1, "Nutella": 1, "Cheetos": 1, "CocaColaZero": 1};
   memory_counts = {"Tapuchips": 0, "Nutella": 0, "Cheetos": 0, "CocaColaZero": 0};
   memory_target_occurrence = {};
-  for (var prod, _pj_c = 0, _pj_a = ["Tapuchips", "Nutella", "Cheetos", "CocaColaZero"], _pj_b = _pj_a.length; (_pj_c < _pj_b); _pj_c += 1) {
-      prod = _pj_a[_pj_c];
-      memory_target_occurrence[prod] = util.randomChoice([1, 2, 3]);
-  }
-  all_products = ["Allin", "Cheetos", "ChocolatePara", "CocaColaZero", "Cornflakes", "MangoFree", "Nutella", "Slimdelis", "Tamar", "Tapuchips", "TimTam", "WaffleCrisp", "XL"];
   
+  var product_list = ["Tapuchips", "Nutella", "Cheetos", "CocaColaZero"];
+  var occurrences = [1, 2, 3];
+  
+  for (var i = 0; i < product_list.length; i++) {
+      var prod = product_list[i];
+      
+      // Manual random choice: Pick a random index from the [1, 2, 3] array
+      var randomIndex = Math.floor(Math.random() * occurrences.length);
+      memory_target_occurrence[prod] = occurrences[randomIndex];
+  }
+  
+  all_products = ["Allin", "Cheetos", "ChocolatePara", "CocaColaZero", "Cornflakes", "MangoFree", "Nutella", "Slimdelis", "Tamar", "Tapuchips", "TimTam", "WaffleCrisp", "XL"];
   memoryQuestion = new visual.TextStim({
     win: psychoJS.window,
     name: 'memoryQuestion',
