@@ -1533,6 +1533,7 @@ function memoryTrialRoutineBegin(snapshot) {
     memoryTrialMaxDurationReached = false;
     // update component parameters for each repeat
     // Run 'Begin Routine' code from memoryCode
+    var _pj;
     interaction_started = false;
     wrong_options = [];
     memory_options = [];
