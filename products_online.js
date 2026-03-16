@@ -164,13 +164,14 @@ var setOrderClock;
 var fixationClock;
 var text_fixation;
 var ratingTrialClock;
-var TIME_LIMIT;
+var TTIME_LIMIT;
 var all_questions;
-var questionClock;
-var delayClock;
 var SLIDER_MIN;
 var SLIDER_MAX;
 var SLIDER_WIDTH;
+var SLIDER_Y;
+var questionClock;
+var delayClock;
 var productImage;
 var questionText;
 var ratingValueText;
@@ -247,19 +248,21 @@ async function experimentInit() {
   // Initialize components for Routine "ratingTrial"
   ratingTrialClock = new util.Clock();
   // Run 'Begin Experiment' code from ratingCode
-  TIME_LIMIT = 8
+  TTIME_LIMIT = 8;
   
   all_questions = [
-      ('liking', 'How much do you LIKE the product?'),
-      ('taste', 'How TASTY do you think the product is?'),
-      ('health', 'How HEALTHY do you think the product is?')
-  ]
+    ["liking", "How much do you LIKE the product?"],
+    ["taste", "How TASTY do you think the product is?"],
+    ["health", "How HEALTHY do you think the product is?"]
+  ];
   
-  questionClock = core.Clock()
-  delayClock = core.Clock()
-  SLIDER_MIN = 0
-  SLIDER_MAX = 7
-  SLIDER_WIDTH = 0.72
+  SLIDER_MIN = 0;
+  SLIDER_MAX = 7;
+  SLIDER_WIDTH = 0.72;
+  SLIDER_Y = -0.33;
+  
+  questionClock = new util.Clock();
+  delayClock = new util.Clock();
   
   productImage = new visual.ImageStim({
     win : psychoJS.window,
@@ -766,29 +769,29 @@ function setOrderRoutineBegin(snapshot) {
     setOrderMaxDurationReached = false;
     // update component parameters for each repeat
     // Run 'Begin Routine' code from code_serOrder
-    // 1. Get the trials (Main loop name must match your loop)
-    all_trials = psychoJS.experiment._trialsData; 
-    row_order = Array.from({length: all_trials.length}, (_, i) => i);
+    all_trials = TrialHandler.importConditions(psychoJS.serverManager, 'image_table.csv');
+    row_order = [...Array(all_trials.length).keys()];
     
-    // 2. The function to check for adjacent products
-    function has_adjacent_same_product(order) {
-        for (let i = 0; i < order.length - 1; i++) {
-            if (all_trials[order[i]]['product_id'] === all_trials[order[i + 1]]['product_id']) {
-                return true;
-            }
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+    
+    let valid_order = false;
+    while (!valid_order) {
+      shuffleArray(row_order);
+      valid_order = true;
+      for (let i = 0; i < row_order.length - 1; i++) {
+        if (all_trials[row_order[i]]["product_id"] === all_trials[row_order[i + 1]]["product_id"]) {
+          valid_order = false;
+          break;
         }
-        return false;
+      }
     }
     
-    // 3. Shuffle logic using PsychoJS utility
-    util.shuffle(row_order);
-    while (has_adjacent_same_product(row_order)) {
-        util.shuffle(row_order);
-    }
-    
-    // 4. Convert to string for the loop
-    selected_rows_str = row_order.join(',');
-    
+    selected_rows_str = row_order.join(",");
     continueRoutine = false;
     psychoJS.experiment.addData('setOrder.started', globalClock.getTime());
     setOrderMaxDuration = null
