@@ -1555,8 +1555,9 @@ function memoryTrialRoutineBegin(snapshot) {
     if (_pj.in_es6(product_id, memory_counts)) {
         memory_counts[product_id] += 1;
     }
-    psychoJS.experiment.addData("memory_count_now", memory_counts.get(product_id, ""));
-    psychoJS.experiment.addData("memory_target_now", memory_target_occurrence.get(product_id, ""));
+    // New (JavaScript-style)
+    psychoJS.experiment.addData("memory_count_now", memory_counts[product_id] || "");
+    psychoJS.experiment.addData("memory_target_now", memory_target_occurrence[product_id] || "");
     show_memory = false;
     memory_correct_product = "";
     if (_pj.in_es6(product_id, MEMORY_TRIGGERS)) {
