@@ -376,7 +376,7 @@ async function experimentInit() {
   memory_target_occurrence = {};
   for (var prod, _pj_c = 0, _pj_a = ["Tapuchips", "Nutella", "Cheetos", "CocaColaZero"], _pj_b = _pj_a.length; (_pj_c < _pj_b); _pj_c += 1) {
       prod = _pj_a[_pj_c];
-      memory_target_occurrence[prod] = Math.random.choice([1, 2, 3]);
+      memory_target_occurrence[prod] = util.randint(1, 4);
   }
   all_products = ["Allin", "Cheetos", "ChocolatePara", "CocaColaZero", "Cornflakes", "MangoFree", "Nutella", "Slimdelis", "Tamar", "Tapuchips", "TimTam", "WaffleCrisp", "XL"];
   
