@@ -1054,6 +1054,8 @@ var trial_ratings;
 var trial_rts;
 var trial_init;
 var start_x;
+var current_x;
+var mouse_has_moved;
 var init_val;
 var click_ready;
 var waiting_next_question;
@@ -1079,16 +1081,13 @@ function ratingTrialRoutineBegin(snapshot) {
     ratingTrialMaxDurationReached = false;
     // update component parameters for each repeat
     // Run 'Begin Routine' code from ratingCode
-    // copy and shuffle questions
     questions_list = [...all_questions];
     
-    function shuffleArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
+    // shuffle
+    for (let i = questions_list.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
+        [questions_list[i], questions_list[j]] = [questions_list[j], questions_list[i]];
     }
-    shuffleArray(questions_list);
     
     question_index = 0;
     trial_ratings = {};
@@ -1097,11 +1096,12 @@ function ratingTrialRoutineBegin(snapshot) {
     
     questionText.text = questions_list[question_index][1];
     
-    // random initial mouse x position along the slider
+    // random initial slider x position
     start_x = ((Math.random() * SLIDER_WIDTH) - (SLIDER_WIDTH / 2));
-    ratingMouse.setPos([start_x, -0.33]);
+    current_x = start_x;
+    mouse_has_moved = false;
     
-    // convert initial mouse position to 0-7 value
+    // convert initial x to 0-7 value
     init_val = (((start_x + (SLIDER_WIDTH / 2)) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN)) + SLIDER_MIN;
     init_val = Math.round(init_val * 10) / 10;
     init_val = Math.min(Math.max(init_val, SLIDER_MIN), SLIDER_MAX);
@@ -1154,7 +1154,6 @@ function ratingTrialRoutineBegin(snapshot) {
 }
 
 
-var current_x;
 var current_val;
 var prevButtonState;
 var _mouseButtons;
@@ -1167,9 +1166,14 @@ function ratingTrialRoutineEachFrame() {
     frameN = frameN + 1;// number of completed frames (so 0 is the first frame)
     // update/draw components on each frame
     // Run 'Each Frame' code from ratingCode
-    // current slider value from mouse x position
+    // get real mouse position
     let mousePos = ratingMouse.getPos();
-    let current_x = mousePos[0];
+    
+    // once mouse moves, start using real mouse x
+    if (mousePos && Math.abs(mousePos[0]) > 0.001) {
+        current_x = mousePos[0];
+        mouse_has_moved = true;
+    }
     
     // clamp x to slider width
     current_x = Math.max((-SLIDER_WIDTH / 2), Math.min((SLIDER_WIDTH / 2), current_x));
@@ -1192,13 +1196,12 @@ function ratingTrialRoutineEachFrame() {
         click_ready = false;
         waiting_next_question = true;
     
-        // save current response automatically
         trial_ratings[questions_list[question_index][0]] = current_val;
         trial_rts[questions_list[question_index][0]] = questionClock.getTime();
     }
     
-    // after warning delay, move to next question
-    if (waiting_next_question && (questionClock.getTime() >= TTIME_LIMIT + delay_duration)) {
+    // after timeout warning delay, move to next question
+    if (waiting_next_question && timeout_warning && (questionClock.getTime() >= TTIME_LIMIT + delay_duration)) {
         question_index += 1;
     
         if (question_index >= questions_list.length) {
@@ -1206,11 +1209,10 @@ function ratingTrialRoutineEachFrame() {
         } else {
             questionText.text = questions_list[question_index][1];
     
-            // random initial mouse x position along the slider
             start_x = ((Math.random() * SLIDER_WIDTH) - (SLIDER_WIDTH / 2));
-            ratingMouse.setPos([start_x, -0.33]);
+            current_x = start_x;
+            mouse_has_moved = false;
     
-            // convert initial mouse position to 0-7 value
             init_val = (((start_x + (SLIDER_WIDTH / 2)) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN)) + SLIDER_MIN;
             init_val = Math.round(init_val * 10) / 10;
             init_val = Math.min(Math.max(init_val, SLIDER_MIN), SLIDER_MAX);
@@ -1231,7 +1233,7 @@ function ratingTrialRoutineEachFrame() {
         }
     }
     
-    // check for mouse click response
+    // mouse click response
     if (click_ready && ratingMouse.getPressed()[0]) {
         click_ready = false;
     
@@ -1242,7 +1244,7 @@ function ratingTrialRoutineEachFrame() {
         waiting_next_question = true;
     }
     
-    // after normal click delay, move to next question
+    // after click delay, move to next question
     if (waiting_next_question && !timeout_warning && (questionClock.getTime() >= trial_rts[questions_list[question_index][0]] + normal_delay)) {
         question_index += 1;
     
@@ -1251,11 +1253,10 @@ function ratingTrialRoutineEachFrame() {
         } else {
             questionText.text = questions_list[question_index][1];
     
-            // random initial mouse x position along the slider
             start_x = ((Math.random() * SLIDER_WIDTH) - (SLIDER_WIDTH / 2));
-            ratingMouse.setPos([start_x, -0.33]);
+            current_x = start_x;
+            mouse_has_moved = false;
     
-            // convert initial mouse position to 0-7 value
             init_val = (((start_x + (SLIDER_WIDTH / 2)) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN)) + SLIDER_MIN;
             init_val = Math.round(init_val * 10) / 10;
             init_val = Math.min(Math.max(init_val, SLIDER_MIN), SLIDER_MAX);
@@ -1270,6 +1271,7 @@ function ratingTrialRoutineEachFrame() {
             click_ready = true;
             waiting_next_question = false;
             sliderCover.opacity = 0;
+            warningText.opacity = 0;
         }
     }
     
