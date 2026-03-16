@@ -2,7 +2,7 @@
  * Products_Online *
  ************************/
 
-import { core, data, sound, util, visual, hardware } from './lib/psychojs-2025.1.1.js';
+import { core, data, sound, util, visual, hardware } from './lib/psychojs-2026.1.1.js';
 const { PsychoJS } = core;
 const { TrialHandler, MultiStairHandler } = data;
 const { Scheduler } = util;
@@ -130,7 +130,7 @@ async function updateInfo() {
   currentLoop = psychoJS.experiment;  // right now there are no loops
   expInfo['date'] = util.MonotonicClock.getDateStr();  // add a simple timestamp
   expInfo['expName'] = expName;
-  expInfo['psychopyVersion'] = '2025.1.1';
+  expInfo['psychopyVersion'] = '2026.1.1';
   expInfo['OS'] = window.navigator.platform;
 
 
@@ -531,7 +531,10 @@ function WelcomeRoutineEachFrame() {
     
     // if key_resp is active this frame...
     if (key_resp.status === PsychoJS.Status.STARTED) {
-      let theseKeys = key_resp.getKeys({keyList: 'space', waitRelease: false});
+      let theseKeys = key_resp.getKeys({
+        keyList: typeof 'space' === 'string' ? ['space'] : 'space', 
+        waitRelease: false
+      });
       _key_resp_allKeys = _key_resp_allKeys.concat(theseKeys);
       if (_key_resp_allKeys.length > 0) {
         key_resp.keys = _key_resp_allKeys[_key_resp_allKeys.length - 1].name;  // just the last key pressed
@@ -676,7 +679,10 @@ function instructionsRoutineEachFrame() {
     
     // if key_resp_instructions is active this frame...
     if (key_resp_instructions.status === PsychoJS.Status.STARTED) {
-      let theseKeys = key_resp_instructions.getKeys({keyList: 'space', waitRelease: false});
+      let theseKeys = key_resp_instructions.getKeys({
+        keyList: typeof 'space' === 'string' ? ['space'] : 'space', 
+        waitRelease: false
+      });
       _key_resp_instructions_allKeys = _key_resp_instructions_allKeys.concat(theseKeys);
       if (_key_resp_instructions_allKeys.length > 0) {
         key_resp_instructions.keys = _key_resp_instructions_allKeys[_key_resp_instructions_allKeys.length - 1].name;  // just the last key pressed
@@ -1691,7 +1697,10 @@ function memoryTrialRoutineEachFrame() {
     
     // if memoryKey is active this frame...
     if (memoryKey.status === PsychoJS.Status.STARTED) {
-      let theseKeys = memoryKey.getKeys({keyList: ['1','2','3'], waitRelease: false});
+      let theseKeys = memoryKey.getKeys({
+        keyList: typeof ['1','2','3'] === 'string' ? [['1','2','3']] : ['1','2','3'], 
+        waitRelease: false
+      });
       _memoryKey_allKeys = _memoryKey_allKeys.concat(theseKeys);
       if (_memoryKey_allKeys.length > 0) {
         memoryKey.keys = _memoryKey_allKeys[_memoryKey_allKeys.length - 1].name;  // just the last key pressed
@@ -1865,7 +1874,10 @@ function thanksRoutineEachFrame() {
     
     // if endKey is active this frame...
     if (endKey.status === PsychoJS.Status.STARTED) {
-      let theseKeys = endKey.getKeys({keyList: 'space', waitRelease: false});
+      let theseKeys = endKey.getKeys({
+        keyList: typeof 'space' === 'string' ? ['space'] : 'space', 
+        waitRelease: false
+      });
       _endKey_allKeys = _endKey_allKeys.concat(theseKeys);
       if (_endKey_allKeys.length > 0) {
         endKey.keys = _endKey_allKeys[_endKey_allKeys.length - 1].name;  // just the last key pressed
