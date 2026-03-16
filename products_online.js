@@ -1512,7 +1512,9 @@ function ratingTrialRoutineEnd(snapshot) {
 
 
 var memoryTrialMaxDurationReached;
-var _pj;
+var interaction_started;
+var wrong_options;
+var memory_options;
 var show_memory;
 var memory_correct_product;
 var _memoryKey_allKeys;
@@ -1533,24 +1535,11 @@ function memoryTrialRoutineBegin(snapshot) {
     memoryTrialMaxDurationReached = false;
     // update component parameters for each repeat
     // Run 'Begin Routine' code from memoryCode
-    var _pj;
-    function _pj_snippets(container) {
-        function in_es6(left, right) {
-            if (((right instanceof Array) || ((typeof right) === "string"))) {
-                return (right.indexOf(left) > (- 1));
-            } else {
-                if (((right instanceof Map) || (right instanceof Set) || (right instanceof WeakMap) || (right instanceof WeakSet))) {
-                    return right.has(left);
-                } else {
-                    return (left in right);
-                }
-            }
-        }
-        container["in_es6"] = in_es6;
-        return container;
-    }
-    _pj = {};
-    _pj_snippets(_pj);
+    interaction_started = false;
+    wrong_options = [];
+    memory_options = [];
+    show_memory = false;
+    memory_correct_product = "";
     
     // Update memory count
     if (_pj.in_es6(product_id, memory_counts)) {
@@ -1561,12 +1550,9 @@ function memoryTrialRoutineBegin(snapshot) {
     psychoJS.experiment.addData("memory_count_now", memory_counts[product_id] || "");
     psychoJS.experiment.addData("memory_target_now", memory_target_occurrence[product_id] || "");
     
-    show_memory = false;
-    memory_correct_product = "";
-    
     // Check if memory task should trigger
     if (_pj.in_es6(product_id, MEMORY_TRIGGERS)) {
-        if ((memory_counts[product_id] === memory_target_occurrence[product_id])) {
+        if (memory_counts[product_id] === memory_target_occurrence[product_id]) {
             show_memory = true;
             memory_correct_product = product_id;
         }
@@ -1575,11 +1561,9 @@ function memoryTrialRoutineBegin(snapshot) {
     if (!show_memory) {
         continueRoutine = false;
     } else {
-        // 1. Hide mouse at start
-        document.body.style.cursor = 'none';
-        interaction_started = false; 
+        document.body.style.cursor = "none";
+        interaction_started = false;
     
-        // 2. Generate the list of wrong options
         let distractor_pool = [];
         for (let p of all_products) {
             if (p !== memory_correct_product) {
@@ -1587,24 +1571,17 @@ function memoryTrialRoutineBegin(snapshot) {
             }
         }
     
-        // 3. Shuffle the pool manually and pick the first 2
-        // (This is a native JS way to do a 'sample')
         distractor_pool.sort(() => Math.random() - 0.5);
         wrong_options = distractor_pool.slice(0, 2);
     
-        // 4. Combine with the correct product
         memory_options = [wrong_options[0], wrong_options[1], memory_correct_product];
-    
-        // 5. Shuffle the final 3 options so the correct one moves
         memory_options.sort(() => Math.random() - 0.5);
     
-        // 6. Update UI
         memoryQuestion.text = "Which product was shown in the previous trial?\n\nUse keys 1, 2, or 3 to respond.";
-        opt1Text.text = ("1. " + memory_options[0]);
-        opt2Text.text = ("2. " + memory_options[1]);
-        opt3Text.text = ("3. " + memory_options[2]);
+        opt1Text.text = "1. " + memory_options[0];
+        opt2Text.text = "2. " + memory_options[1];
+        opt3Text.text = "3. " + memory_options[2];
     }
-        
     memoryKey.keys = undefined;
     memoryKey.rt = undefined;
     _memoryKey_allKeys = [];
