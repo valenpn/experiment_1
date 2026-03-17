@@ -12,9 +12,10 @@ const { round } = util;
 
 
 // store info about the experiment session:
-let expName = 'products_online';
+let expName = 'products_online';  // from the Builder filename that created this script
 let expInfo = {
-  'start_msg': 'Loading experiment...\nClick OK to continue'
+    'participant_ID': '',
+    'age': '',
 };
 let PILOTING = util.getUrlParameters().has('__pilotToken');
 
@@ -126,28 +127,13 @@ psychoJS.experimentLogger.setLevel(core.Logger.ServerLevel.INFO);
 var currentLoop;
 var frameDur;
 async function updateInfo() {
-  currentLoop = psychoJS.experiment;
-  expInfo['date'] = util.MonotonicClock.getDateStr();
+  currentLoop = psychoJS.experiment;  // right now there are no loops
+  
+  expInfo['date'] = util.MonotonicClock.getDateStr();  // add a simple timestamp
   expInfo['expName'] = expName;
   expInfo['psychopyVersion'] = '2026.1.1';
   expInfo['OS'] = window.navigator.platform;
 
-  // add URL parameters from Qualtrics
-  util.addInfoFromUrl(expInfo);
-
-  // make sure the values exist under the exact names you want
-  expInfo['participant_ID'] = expInfo['participant_ID'] || expInfo['ResponseID'] || 'noID';
-  expInfo['age'] = expInfo['age'] || '';
-
-  // optional: remove message field from saved data
-  delete expInfo['start_msg'];
-
-  psychoJS.experiment.dataFileName =
-    `./data/${expInfo["participant_ID"]}/${expInfo["participant_ID"]}_${expName}_${expInfo["date"].split("_")[0]}`;
-  psychoJS.experiment.field_separator = '\t';
-
-  return Scheduler.Event.NEXT;
-}
 
   // store frame rate of monitor if we can measure it successfully
   expInfo['frameRate'] = psychoJS.window.getActualFrameRate();
@@ -158,7 +144,14 @@ async function updateInfo() {
 
   // add info from the URL:
   util.addInfoFromUrl(expInfo);
-  
+  // make sure required fields were filled
+  if (!expInfo['participant_ID'] || !expInfo['age']) {
+    psychoJS.quit({
+      message: 'Please enter participant ID and age before continuing.',
+      isCompleted: false
+    });
+    return Scheduler.Event.QUIT;
+  }
 
   
   psychoJS.experiment.dataFileName = (("." + "/") + `data/${expInfo["participant_ID"]}/${expInfo["participant_ID"]}_${expName}_${expInfo["date"].split("_")[0]}`);
@@ -211,6 +204,8 @@ var memoryTrialClock;
 var MEMORY_TRIGGERS;
 var memory_counts;
 var memory_target_occurrence;
+var rowsForUpload = [];
+var DATAPIPE_EXPERIMENT_ID = "WxmPsuMHvMeP";
 var all_products;
 var memoryQuestion;
 var opt1Text;
@@ -2042,15 +2037,152 @@ function importConditions(currentLoop) {
     return Scheduler.Event.NEXT;
     };
 }
+function safeValue(v) {
+  if (v === undefined || v === null) return "";
+  if (Array.isArray(v)) return JSON.stringify(v);
+  return String(v);
+}
 
+function csvEscape(v) {
+  const s = safeValue(v);
+  if (s.includes('"') || s.includes(",") || s.includes("\n")) {
+    return '"' + s.replace(/"/g, '""') + '"';
+  }
+  return s;
+}
 
+function convertRowsToCSV(rows, columns) {
+  const header = columns.join(",");
+  const lines = rows.map(row => columns.map(col => csvEscape(row[col])).join(","));
+  return [header].concat(lines).join("\n");
+}
+
+async function uploadToDataPipe(csvText, filename) {
+  const response = await fetch("https://pipe.jspsych.org/api/data", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      experimentID: DATAPIPE_EXPERIMENT_ID,
+      filename: filename,
+      data: csvText
+    })
+  });
+
+  const result = await response.json();
+  console.log("DataPipe response:", result);
+
+  if (!response.ok || result.error) {
+    throw new Error(result.error || result.message || "Unknown DataPipe error");
+  }
+
+  return result;
+}
+function saveCurrentTrialRow() {
+  rowsForUpload.push({
+    product_id: typeof product_id !== "undefined" ? product_id : "",
+    version: typeof version !== "undefined" ? version : "",
+    image_path: typeof image_path !== "undefined" ? image_path : "",
+    taste: typeof taste !== "undefined" ? taste : "",
+    taste_initMouse: typeof taste_initMouse !== "undefined" ? taste_initMouse : "",
+    taste_RT: typeof taste_RT !== "undefined" ? taste_RT : "",
+    health: typeof health !== "undefined" ? health : "",
+    health_initMouse: typeof health_initMouse !== "undefined" ? health_initMouse : "",
+    health_RT: typeof health_RT !== "undefined" ? health_RT : "",
+    liking: typeof liking !== "undefined" ? liking : "",
+    liking_initMouse: typeof liking_initMouse !== "undefined" ? liking_initMouse : "",
+    liking_RT: typeof liking_RT !== "undefined" ? liking_RT : "",
+    participant: expInfo["participant_ID"] || "",
+    age: expInfo["age"] || "",
+    trial_type: typeof trial_type !== "undefined" ? trial_type : "",
+    correct_product: typeof correct_product !== "undefined" ? correct_product : "",
+    memory_correct_product: typeof memory_correct_product !== "undefined" ? memory_correct_product : "",
+    memory_chosen: typeof memory_chosen !== "undefined" ? memory_chosen : "",
+    memory_accuracy: typeof memory_accuracy !== "undefined" ? memory_accuracy : "",
+    memory_RT: typeof memory_RT !== "undefined" ? memory_RT : ""
+  });
+}
+function makeUploadFilename() {
+  const pid = expInfo["participant_ID"] || "noID";
+  const dateStr = (expInfo["date"] || "nodate").split("_")[0];
+  const rand = Math.random().toString(36).slice(2, 10);
+  return `${pid}_${dateStr}_${rand}.csv`;
+}
 async function quitPsychoJS(message, isCompleted) {
-  // Check for and save orphaned data
+  // Save any orphaned entry first
   if (psychoJS.experiment.isEntryEmpty()) {
     psychoJS.experiment.nextEntry();
   }
-  psychoJS.window.close();
-  psychoJS.quit({message: message, isCompleted: isCompleted});
-  
-  return Scheduler.Event.QUIT;
+
+  // Show a visible saving message
+  document.body.innerHTML = `
+    <div style="
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 80px;
+      font-size: 28px;
+      color: white;
+      background: black;
+      height: 100vh;
+    ">
+      Saving your data...<br><br>
+      Please do not close this page.
+    </div>
+  `;
+
+  try {
+    const rows = psychoJS.experiment._trialsData || [];
+
+    if (!rows.length) {
+      throw new Error("No experiment rows found to upload.");
+    }
+
+    const columns = [...new Set(rows.flatMap(row => Object.keys(row)))];
+    const csvText = convertRowsToCSV(rows, columns);
+    const filename = makeUploadFilename();
+
+    await uploadToDataPipe(csvText, filename);
+    console.log("Upload successful:", filename);
+
+    document.body.innerHTML = `
+      <div style="
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding-top: 80px;
+        font-size: 28px;
+        color: white;
+        background: black;
+        height: 100vh;
+      ">
+        Your data were saved successfully.<br><br>
+        You may now close this page.
+      </div>
+    `;
+
+    psychoJS.window.close();
+    psychoJS.quit({message: message, isCompleted: isCompleted});
+    return Scheduler.Event.QUIT;
+
+  } catch (err) {
+    console.error("Upload failed:", err);
+
+    document.body.innerHTML = `
+      <div style="
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding-top: 80px;
+        font-size: 24px;
+        color: white;
+        background: black;
+        height: 100vh;
+      ">
+        There was a problem saving your data.<br><br>
+        Please contact the researcher.<br><br>
+        Error: ${err.message}
+      </div>
+    `;
+
+    return Scheduler.Event.QUIT;
+  }
 }
