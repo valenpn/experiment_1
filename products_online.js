@@ -12,10 +12,9 @@ const { round } = util;
 
 
 // store info about the experiment session:
-let expName = 'products_online';  // from the Builder filename that created this script
+let expName = 'products_online';
 let expInfo = {
-    'participant_ID': '',
-    'age': '',
+  'start_msg': 'Loading experiment...\nClick OK to continue'
 };
 let PILOTING = util.getUrlParameters().has('__pilotToken');
 
@@ -127,12 +126,28 @@ psychoJS.experimentLogger.setLevel(core.Logger.ServerLevel.INFO);
 var currentLoop;
 var frameDur;
 async function updateInfo() {
-  currentLoop = psychoJS.experiment;  // right now there are no loops
-  expInfo['date'] = util.MonotonicClock.getDateStr();  // add a simple timestamp
+  currentLoop = psychoJS.experiment;
+  expInfo['date'] = util.MonotonicClock.getDateStr();
   expInfo['expName'] = expName;
   expInfo['psychopyVersion'] = '2026.1.1';
   expInfo['OS'] = window.navigator.platform;
 
+  // add URL parameters from Qualtrics
+  util.addInfoFromUrl(expInfo);
+
+  // make sure the values exist under the exact names you want
+  expInfo['participant_ID'] = expInfo['participant_ID'] || expInfo['ResponseID'] || 'noID';
+  expInfo['age'] = expInfo['age'] || '';
+
+  // optional: remove message field from saved data
+  delete expInfo['start_msg'];
+
+  psychoJS.experiment.dataFileName =
+    `./data/${expInfo["participant_ID"]}/${expInfo["participant_ID"]}_${expName}_${expInfo["date"].split("_")[0]}`;
+  psychoJS.experiment.field_separator = '\t';
+
+  return Scheduler.Event.NEXT;
+}
 
   // store frame rate of monitor if we can measure it successfully
   expInfo['frameRate'] = psychoJS.window.getActualFrameRate();
