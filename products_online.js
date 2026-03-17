@@ -1186,7 +1186,14 @@ function ratingTrialRoutineBegin(snapshot) {
     click_ready = false;
     questionClock.reset();
     delayClock.reset();
-    productImage.setImage(image_path);
+    console.log("Trial vars:", { product_id, image_path });
+
+    if (!image_path) {
+        console.error("image_path is undefined for this trial");
+        productImage.setImage('default.png');
+    } else {
+        productImage.setImage(image_path);
+    }
     // setup some python lists for storing info about the ratingMouse
     // current position of the mouse:
     ratingMouse.x = [];
