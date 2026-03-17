@@ -144,7 +144,8 @@ async function updateInfo() {
   
 
   
-  psychoJS.experiment.dataFileName = (("." + "/") + `data/${expInfo["participant_ID"]}/${expInfo["participant_ID"]}_${expName}_${expInfo["date"].split("_")[0]}`);
+  let pid = expInfo["participant_ID"] || "noID";
+  psychoJS.experiment.dataFileName = `./data/${pid}/${pid}_${expName}_${expInfo["date"].split("_")[0]}`;
   psychoJS.experiment.field_separator = '\t';
 
 
