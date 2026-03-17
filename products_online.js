@@ -10,14 +10,15 @@ const { Scheduler } = util;
 const { abs, sin, cos, PI: pi, sqrt } = Math;
 const { round } = util;
 
+//recover data
+let urlParams = util.getUrlParameters();
 
-// store info about the experiment session:
-let expName = 'products_online';  // from the Builder filename that created this script
 let expInfo = {
-    'participant_ID': '',
-    'age': '',
+    'participant_ID': urlParams.get('participant_ID') || '',
+    'age': urlParams.get('age') || '',
 };
-let PILOTING = util.getUrlParameters().has('__pilotToken');
+
+let PILOTING = urlParams.has('__pilotToken');
 
 // Start code blocks for 'Before Experiment'
 // init psychoJS:
@@ -35,11 +36,6 @@ psychoJS.openWindow({
   backgroundFit: 'none',
 });
 // schedule the experiment:
-psychoJS.schedule(psychoJS.gui.DlgFromDict({
-  dictionary: expInfo,
-  title: expName
-}));
-
 const flowScheduler = new Scheduler(psychoJS);
 const dialogCancelScheduler = new Scheduler(psychoJS);
 psychoJS.scheduleCondition(function() { return (psychoJS.gui.dialogComponent.button === 'OK'); },flowScheduler, dialogCancelScheduler);
