@@ -1,4 +1,4 @@
-﻿/************************ 
+/************************ 
  * Products_Online *
  ************************/
 
@@ -1518,6 +1518,9 @@ var memory_correct_product;
 var _memoryKey_allKeys;
 var memoryTrialMaxDuration;
 var memoryTrialComponents;
+var interaction_started;
+var wrong_options;
+var memory_options;
 function memoryTrialRoutineBegin(snapshot) {
   return async function () {
     TrialHandler.fromSnapshot(snapshot); // ensure that .thisN vals are up to date
@@ -1577,7 +1580,7 @@ function memoryTrialRoutineBegin(snapshot) {
     } else {
         // 1. Hide mouse at start
         document.body.style.cursor = 'none';
-        //interaction_started = false; 
+        interaction_started = false; 
     
         // 2. Generate the list of wrong options
         let distractor_pool = [];
@@ -1586,16 +1589,11 @@ function memoryTrialRoutineBegin(snapshot) {
                 distractor_pool.push(p);
             }
         }
-    
-        // 3. Shuffle the pool manually and pick the first 2
-        // (This is a native JS way to do a 'sample')
+        
         distractor_pool.sort(() => Math.random() - 0.5);
         wrong_options = distractor_pool.slice(0, 2);
-    
-        // 4. Combine with the correct product
+        
         memory_options = [wrong_options[0], wrong_options[1], memory_correct_product];
-    
-        // 5. Shuffle the final 3 options so the correct one moves
         memory_options.sort(() => Math.random() - 0.5);
     
         // 6. Update UI
