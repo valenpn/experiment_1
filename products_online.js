@@ -10,7 +10,9 @@ const { Scheduler } = util;
 const { abs, sin, cos, PI: pi, sqrt } = Math;
 const { round } = util;
 
-//recover data
+// store info about the experiment session:
+let expName = 'products_online';
+
 let urlParams = util.getUrlParameters();
 
 let expInfo = {
@@ -18,7 +20,7 @@ let expInfo = {
     'age': urlParams.get('age') || '',
 };
 
-let PILOTING = urlParams.has('__pilotToken');
+let PILOTING = urlParams.has('__pilotToken');;
 
 // Start code blocks for 'Before Experiment'
 // init psychoJS:
