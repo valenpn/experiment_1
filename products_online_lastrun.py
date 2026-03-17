@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 This experiment was created using PsychoPy3 Experiment Builder (v2026.1.1),
-    on Mon Mar 16 17:23:20 2026
+    on Tue Mar 17 16:23:19 2026
 If you publish work using this script the most relevant publication is:
 
     Peirce J, Gray JR, Simpson S, MacAskill M, Höchenberger R, Sogo H, Kastman E, Lindeløv JK. (2019) 
@@ -444,9 +444,9 @@ def run(expInfo, thisExp, win, globalClock=None, thisSession=None):
     ratingSlider = visual.Slider(win=win, name='ratingSlider',
         startValue=None, size=(0.7, 0.05), pos=(0, -0.33), units=win.units,
         labels=[0,1,2,3,4,5,6,7], ticks=(0, 1, 2, 3, 4, 5, 6, 7), granularity=0.1,
-        style='slider', styleTweaks=(), opacity=None,
-        labelColor='LightGray', markerColor=[1.0000, 1.0000, 1.0000], lineColor='White', colorSpace='rgb',
-        font='Noto Sans', labelHeight=0.04,
+        style='slider', styleTweaks=[], opacity=None,
+        labelColor='white', markerColor='white', lineColor='white', colorSpace='rgb',
+        font='Arial', labelHeight=0.05,
         flip=False, ori=0.0, depth=-4, readOnly=False)
     sliderCover = visual.Rect(
         win=win, name='sliderCover',
