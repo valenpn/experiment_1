@@ -1577,7 +1577,7 @@ function memoryTrialRoutineBegin(snapshot) {
     } else {
         // 1. Hide mouse at start
         document.body.style.cursor = 'none';
-        interaction_started = false; 
+        //interaction_started = false; 
     
         // 2. Generate the list of wrong options
         let distractor_pool = [];
