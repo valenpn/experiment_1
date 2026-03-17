@@ -184,6 +184,9 @@ var productImage;
 var questionText;
 var ratingValueText;
 var ratingSlider;
+var sliderLine;
+var sliderMarker;
+var sliderTicks;
 var sliderCover;
 var ratingMouse;
 var leftAnchor;
@@ -318,16 +321,64 @@ async function experimentInit() {
     depth: -3.0 
   });
   
-  ratingSlider = new visual.Slider({
-    win: psychoJS.window, name: 'ratingSlider',
-    startValue: undefined,
-    size: [0.7, 0.05], pos: [0, (- 0.33)], ori: 0.0, units: psychoJS.window.units,
-    labels: [0, 1, 2, 3, 4, 5, 6, 7], fontSize: 0.05, ticks: [0, 1, 2, 3, 4, 5, 6, 7],
-    granularity: 0.1, style: ["SLIDER"],
-    color: new util.Color('white'), markerColor: new util.Color('white'), lineColor: new util.Color('white'), 
-    opacity: undefined, fontFamily: 'Arial', bold: true, italic: false, depth: -4, 
-    flip: false,
+  ratingSlider = null;  // disable built-in slider completely
+
+  sliderLine = new visual.Rect({
+    win: psychoJS.window,
+    name: 'sliderLine',
+    width: 0.72,
+    height: 0.006,
+    ori: 0.0,
+    pos: [0, -0.33],
+    draggable: false,
+    anchor: 'center',
+    lineWidth: 0,
+    lineColor: new util.Color('white'),
+    fillColor: new util.Color('white'),
+    colorSpace: 'rgb',
+    opacity: 1.0,
+    depth: -4,
+    interpolate: true,
   });
+  
+  sliderMarker = new visual.Polygon({
+    win: psychoJS.window,
+    name: 'sliderMarker',
+    edges: 64,
+    size: [0.02, 0.02],
+    ori: 0.0,
+    pos: [0, -0.33],
+    draggable: false,
+    anchor: 'center',
+    lineWidth: 1.0,
+    lineColor: new util.Color('white'),
+    fillColor: new util.Color('white'),
+    colorSpace: 'rgb',
+    opacity: 1.0,
+    depth: -3.5,
+    interpolate: true,
+  });
+  
+  sliderTicks = [];
+  for (let i = 0; i <= 7; i++) {
+    let xPos = -0.36 + (i / 7) * 0.72;
+    sliderTicks.push(new visual.TextStim({
+      win: psychoJS.window,
+      name: `sliderTick_${i}`,
+      text: String(i),
+      font: 'Arial',
+      units: undefined,
+      pos: [xPos, -0.38],
+      draggable: false,
+      height: 0.025,
+      wrapWidth: undefined,
+      ori: 0.0,
+      languageStyle: 'LTR',
+      color: new util.Color('white'),
+      opacity: 1.0,
+      depth: -4.2
+    }));
+  }
   
   sliderCover = new visual.Rect ({
     win: psychoJS.window, name: 'sliderCover', 
@@ -1126,9 +1177,8 @@ function ratingTrialRoutineBegin(snapshot) {
     let init_val = ((current_x + SLIDER_WIDTH / 2) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN) + SLIDER_MIN;
     init_val = Math.min(Math.max(Number.parseFloat(init_val.toFixed(1)), SLIDER_MIN), SLIDER_MAX);
     
-    ratingSlider.reset();
-    ratingSlider.markerPos = init_val;
     ratingValueText.text = "Rating: " + init_val.toFixed(1);
+    sliderMarker.setPos([current_x, SLIDER_Y]);
     
     trial_init[questions_list[question_index][0]] = init_val;
     
@@ -1139,7 +1189,6 @@ function ratingTrialRoutineBegin(snapshot) {
     questionClock.reset();
     delayClock.reset();
     productImage.setImage(image_path);
-    ratingSlider.reset()
     // setup some python lists for storing info about the ratingMouse
     // current position of the mouse:
     ratingMouse.x = [];
@@ -1156,7 +1205,11 @@ function ratingTrialRoutineBegin(snapshot) {
     ratingTrialComponents.push(productImage);
     ratingTrialComponents.push(questionText);
     ratingTrialComponents.push(ratingValueText);
-    ratingTrialComponents.push(ratingSlider);
+    ratingTrialComponents.push(sliderLine);
+    ratingTrialComponents.push(sliderMarker);
+    for (const tick of sliderTicks) {
+      ratingTrialComponents.push(tick);
+    }
     ratingTrialComponents.push(sliderCover);
     ratingTrialComponents.push(ratingMouse);
     ratingTrialComponents.push(leftAnchor);
@@ -1243,11 +1296,10 @@ function ratingTrialRoutineEachFrame() {
     
                 let next_init_val = ((current_x + SLIDER_WIDTH / 2) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN) + SLIDER_MIN;
                 next_init_val = Math.min(Math.max(Number.parseFloat(next_init_val.toFixed(1)), SLIDER_MIN), SLIDER_MAX);
-    
-                ratingSlider.reset();
-                ratingSlider.markerPos = next_init_val;
+                
+                current_x = (((next_init_val - SLIDER_MIN) / (SLIDER_MAX - SLIDER_MIN)) * SLIDER_WIDTH) - (SLIDER_WIDTH / 2);
+                sliderMarker.setPos([current_x, SLIDER_Y]);
                 ratingValueText.text = "Rating: " + next_init_val.toFixed(1);
-    
                 trial_init[questions_list[question_index][0]] = next_init_val;
     
                 questionClock.reset();
@@ -1263,7 +1315,7 @@ function ratingTrialRoutineEachFrame() {
         leftAnchor.text = "Not at all";
         rightAnchor.text = "Very much";
     
-        ratingSlider.markerPos = current_val;
+        sliderMarker.setPos([current_x, SLIDER_Y]);
         ratingValueText.text = "Rating: " + current_val.toFixed(1);
     
         // timeout
@@ -1338,22 +1390,6 @@ function ratingTrialRoutineEachFrame() {
     if (ratingValueText.status === PsychoJS.Status.STARTED) {
     }
     
-    
-    // *ratingSlider* updates
-    if (t >= 0.0 && ratingSlider.status === PsychoJS.Status.NOT_STARTED) {
-      // keep track of start time/frame for later
-      ratingSlider.tStart = t;  // (not accounting for frame time here)
-      ratingSlider.frameNStart = frameN;  // exact frame index
-      
-      ratingSlider.setAutoDraw(true);
-    }
-    
-    
-    // if ratingSlider is active this frame...
-    if (ratingSlider.status === PsychoJS.Status.STARTED) {
-    }
-    
-    
     // *sliderCover* updates
     if (t >= 0.0 && sliderCover.status === PsychoJS.Status.NOT_STARTED) {
       // keep track of start time/frame for later
@@ -1363,7 +1399,28 @@ function ratingTrialRoutineEachFrame() {
       sliderCover.setAutoDraw(true);
     }
     
+    // *sliderLine* updates
+    if (t >= 0.0 && sliderLine.status === PsychoJS.Status.NOT_STARTED) {
+      sliderLine.tStart = t;
+      sliderLine.frameNStart = frameN;
+      sliderLine.setAutoDraw(true);
+    }
     
+    // *sliderMarker* updates
+    if (t >= 0.0 && sliderMarker.status === PsychoJS.Status.NOT_STARTED) {
+      sliderMarker.tStart = t;
+      sliderMarker.frameNStart = frameN;
+      sliderMarker.setAutoDraw(true);
+    }
+    
+    // *sliderTicks* updates
+    for (const tick of sliderTicks) {
+      if (t >= 0.0 && tick.status === PsychoJS.Status.NOT_STARTED) {
+        tick.tStart = t;
+        tick.frameNStart = frameN;
+        tick.setAutoDraw(true);
+      }
+    }
     // if sliderCover is active this frame...
     if (sliderCover.status === PsychoJS.Status.STARTED) {
     }
@@ -1489,9 +1546,10 @@ function ratingTrialRoutineEnd(snapshot) {
     psychoJS.experiment.addData("health", trial_ratings["health"]);
     psychoJS.experiment.addData("health_initMouse", trial_init["health"]);
     psychoJS.experiment.addData("health_RT", trial_rts["health"]);
-    psychoJS.experiment.addData('ratingSlider.response', ratingSlider.getRating());
-    psychoJS.experiment.addData('ratingSlider.rt', ratingSlider.getRT());
     // store data for psychoJS.experiment (ExperimentHandler)
+    psychoJS.experiment.addData('rating_value', current_val);
+    psychoJS.experiment.addData('rating_rt', t);
+    
     psychoJS.experiment.addData('ratingMouse.x', ratingMouse.x);
     psychoJS.experiment.addData('ratingMouse.y', ratingMouse.y);
     psychoJS.experiment.addData('ratingMouse.leftButton', ratingMouse.leftButton);
