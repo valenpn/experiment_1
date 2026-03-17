@@ -1290,17 +1290,17 @@ function ratingTrialRoutineEachFrame() {
                 rightAnchor.text = "Very much";
                 questionText.text = questions_list[question_index][1];
     
-                // random start for next question
-                let next_start_x = (Math.random() * SLIDER_WIDTH) - (SLIDER_WIDTH / 2);
-                current_x = next_start_x;
-    
-                let next_init_val = ((current_x + SLIDER_WIDTH / 2) / SLIDER_WIDTH) * (SLIDER_MAX - SLIDER_MIN) + SLIDER_MIN;
-                next_init_val = Math.min(Math.max(Number.parseFloat(next_init_val.toFixed(1)), SLIDER_MIN), SLIDER_MAX);
+
+                // start next question from previous answer
+                let next_q_key = questions_list[question_index][0];
+                let next_init_val = current_val;
                 
                 current_x = (((next_init_val - SLIDER_MIN) / (SLIDER_MAX - SLIDER_MIN)) * SLIDER_WIDTH) - (SLIDER_WIDTH / 2);
+                
                 sliderMarker.setPos([current_x, SLIDER_Y]);
                 ratingValueText.text = "Rating: " + next_init_val.toFixed(1);
-                trial_init[questions_list[question_index][0]] = next_init_val;
+                
+                trial_init[next_q_key] = next_init_val;
     
                 questionClock.reset();
             }
@@ -1536,16 +1536,21 @@ function ratingTrialRoutineEnd(snapshot) {
     psychoJS.experiment.addData('ratingTrial.stopped', globalClock.getTime());
     // Run 'End Routine' code from ratingCode
     psychoJS.experiment.addData("liking", trial_ratings["liking"]);
-    psychoJS.experiment.addData("liking_initMouse", trial_init["liking"]);
+    //psychoJS.experiment.addData("liking_initMouse", trial_init["liking"]);
+    psychoJS.experiment.addData("liking_prevAnswer", trial_init["liking"]);
     psychoJS.experiment.addData("liking_RT", trial_rts["liking"]);
     
     psychoJS.experiment.addData("taste", trial_ratings["taste"]);
-    psychoJS.experiment.addData("taste_initMouse", trial_init["taste"]);
+    //psychoJS.experiment.addData("taste_initMouse", trial_init["taste"]);
+    psychoJS.experiment.addData("taste_prevAnswer", trial_init["taste"]);
     psychoJS.experiment.addData("taste_RT", trial_rts["taste"]);
     
     psychoJS.experiment.addData("health", trial_ratings["health"]);
-    psychoJS.experiment.addData("health_initMouse", trial_init["health"]);
+    //psychoJS.experiment.addData("health_initMouse", trial_init["health"]);
+    psychoJS.experiment.addData("health_prevAnswer", trial_init["health"]);
     psychoJS.experiment.addData("health_RT", trial_rts["health"]);
+    
+
     // store data for psychoJS.experiment (ExperimentHandler)
     psychoJS.experiment.addData('rating_value', current_val);
     psychoJS.experiment.addData('rating_rt', t);
@@ -1832,7 +1837,7 @@ function memoryTrialRoutineEnd(snapshot) {
                 }
             }
         }
-        memory_accuracy = Number.parseInt((chosen_product === memory_correct_product));
+        memory_accuracy = ((chosen_product === memory_correct_product) ? 1 : 0);
         psychoJS.experiment.addData("memory_correct_product", memory_correct_product);
         psychoJS.experiment.addData("memory_chosen", chosen_product);
         psychoJS.experiment.addData("memory_accuracy", memory_accuracy);
