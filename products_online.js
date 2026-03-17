@@ -10,17 +10,14 @@ const { Scheduler } = util;
 const { abs, sin, cos, PI: pi, sqrt } = Math;
 const { round } = util;
 
+
 // store info about the experiment session:
-let expName = 'products_online';
-
-let urlParams = util.getUrlParameters();
-
+let expName = 'products_online';  // from the Builder filename that created this script
 let expInfo = {
-    'participant_ID': urlParams.get('participant_ID') || '',
-    'age': urlParams.get('age') || '',
+    'participant_ID': '',
+    'age': '',
 };
-
-let PILOTING = urlParams.has('__pilotToken');;
+let PILOTING = util.getUrlParameters().has('__pilotToken');
 
 // Start code blocks for 'Before Experiment'
 // init psychoJS:
@@ -38,9 +35,14 @@ psychoJS.openWindow({
   backgroundFit: 'none',
 });
 // schedule the experiment:
+psychoJS.schedule(psychoJS.gui.DlgFromDict({
+  dictionary: expInfo,
+  title: expName
+}));
+
 const flowScheduler = new Scheduler(psychoJS);
 const dialogCancelScheduler = new Scheduler(psychoJS);
-psychoJS.scheduleCondition(function() { return true; }, flowScheduler, dialogCancelScheduler);
+psychoJS.scheduleCondition(function() { return (psychoJS.gui.dialogComponent.button === 'OK'); },flowScheduler, dialogCancelScheduler);
 
 // flowScheduler gets run if the participants presses OK
 flowScheduler.add(updateInfo); // add timeStamp
@@ -144,8 +146,7 @@ async function updateInfo() {
   
 
   
-  let pid = expInfo["participant_ID"] || "noID";
-  psychoJS.experiment.dataFileName = `./data/${pid}/${pid}_${expName}_${expInfo["date"].split("_")[0]}`;
+  psychoJS.experiment.dataFileName = (("." + "/") + `data/${expInfo["participant_ID"]}/${expInfo["participant_ID"]}_${expName}_${expInfo["date"].split("_")[0]}`);
   psychoJS.experiment.field_separator = '\t';
 
 
@@ -1187,14 +1188,7 @@ function ratingTrialRoutineBegin(snapshot) {
     click_ready = false;
     questionClock.reset();
     delayClock.reset();
-    console.log("Trial vars:", { product_id, image_path });
-
-    if (!image_path) {
-        console.error("image_path is undefined for this trial");
-        productImage.setImage('default.png');
-    } else {
-        productImage.setImage(image_path);
-    }
+    productImage.setImage(image_path);
     // setup some python lists for storing info about the ratingMouse
     // current position of the mouse:
     ratingMouse.x = [];
